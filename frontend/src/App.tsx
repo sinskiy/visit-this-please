@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import env from "./env";
 
 export default function App() {
-  const [data, setData] = useState();
+  const [data, setData] = useState<undefined | { hello: string }>();
   useEffect(() => {
     async function fetchData() {
       const response = await fetch(env.VITE_API_URL);
@@ -12,8 +12,6 @@ export default function App() {
 
     fetchData();
   }, []);
-
-  console.log(data);
 
   return <>{data?.hello}</>;
 }
