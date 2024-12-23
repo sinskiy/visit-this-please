@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.shared.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "./dist/.tmp/tsconfig.tsbuildinfo",
     "esModuleInterop": true,
     "declaration": true,
     "sourceMap": true,
@@ -9,7 +10,7 @@
 
     "target": "ES2016",
     "lib": ["ES2016"],
-    "module": "CommonJS"
+    "module": "ES2015"
   },
   "references": []
 }
