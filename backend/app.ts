@@ -1,7 +1,7 @@
 import express from "express";
 import { readFileSync } from "node:fs";
 import { createServer } from "node:https";
-import { DEFAULT_PORT } from "./const.ts";
+import env from "./env.ts";
 
 const app = express();
 const server = createServer(
@@ -12,9 +12,9 @@ const server = createServer(
   app
 );
 
-const port = process.env.PORT ?? DEFAULT_PORT;
+const port = env.PORT;
 server.listen(port, () => {
-  if (process.env.NODE_ENV === "development") {
+  if (env.NODE_ENV === "development") {
     console.log(`http://localhost:${port}`);
   }
 });
