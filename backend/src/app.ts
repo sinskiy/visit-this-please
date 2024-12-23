@@ -1,6 +1,6 @@
 import express from "express";
 import { createServer } from "node:http";
-import env from "./env.ts";
+import env from "../src/env.ts";
 import cors from "cors";
 
 const app = express();
