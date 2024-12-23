@@ -1,4 +1,4 @@
-import { object, coerce, enum as enumType } from "zod";
+import { object, coerce, enum as enumType, string } from "zod";
 import { jsonStringifyFormatted } from "common";
 
 const schema = object({
@@ -6,6 +6,7 @@ const schema = object({
   NODE_ENV: enumType(["production", "development", "test"]).default(
     "development"
   ),
+  CLIENT_URL: string(),
 });
 
 const parsed = schema.safeParse(process.env);
