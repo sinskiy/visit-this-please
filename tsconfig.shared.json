@@ -6,6 +6,8 @@
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
+    // ESLint technically checks this, but it's weird
+    "noUnusedParameters": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true
