@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "start": "node --env-file=.env.local --watch --experimental-strip-types app.ts"
+    "start": "node --env-file=.env.local --watch --experimental-strip-types src/app.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
