@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import env from "../src/env.ts";
 import cors from "cors";
 
-const app = express();
+export const app = express();
 app.use(cors({ origin: env.CLIENT_URL }));
 const server = createServer(app);
 
