@@ -18,6 +18,7 @@ jobs:
         uses: actions/setup-node@v3
 
       - uses: bahmutov/npm-install@v1
+      - uses: bahmutov/npm-install@v1
         with:
           working-directory: common
           useLockFile: false
