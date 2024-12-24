@@ -5,6 +5,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
 
-    "lib": ["ES2023"]
+    "lib": ["ES2023"],
+    "module": "Node16"
   }
 }
