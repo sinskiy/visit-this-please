@@ -20,9 +20,11 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: common
+          useLockFile: false
       - uses: bahmutov/npm-install@v1
         with:
           working-directory: frontend
+          useLockFile: false
 
       - name: Build project
         run: npm run build -w common & npm run build -w frontend
