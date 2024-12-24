@@ -1,5 +1,4 @@
 import { object, coerce, enum as enumType, string } from "zod";
-import { jsonStringifyFormatted } from "common";
 import "dotenv/config";
 
 const schema = object({
@@ -13,10 +12,7 @@ const schema = object({
 const parsed = schema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error(
-    "❌ Invalid environment variables:",
-    jsonStringifyFormatted(parsed.error.format())
-  );
+  console.error("❌ Invalid environment variables:", parsed.error.format());
   process.exit(1);
 }
 
