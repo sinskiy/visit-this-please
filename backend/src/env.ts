@@ -1,5 +1,6 @@
 import { object, coerce, enum as enumType, string } from "zod";
 import { jsonStringifyFormatted } from "common";
+import "dotenv/config";
 
 const schema = object({
   PORT: coerce.number().int().positive().default(3000),
