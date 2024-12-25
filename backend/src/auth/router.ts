@@ -53,7 +53,7 @@ router.post("/sign-up", async (req, res) => {
 router.post(
   "/log-in",
   passport.authenticate("local", {
-    failureRedirect: "/log-in/error",
+    failureRedirect: "/auth",
     successRedirect: "/auth",
   })
 );
@@ -74,12 +74,6 @@ router.get("/auth", (req, res) => {
   }
 
   res.json({ user: req.user });
-});
-
-// TODO: make ESLint working
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.get("/log-in/error", (_req, _res) => {
-  throw new ErrorWithStatus("Unauthorized", 401);
 });
 
 export default router;
