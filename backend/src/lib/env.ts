@@ -8,6 +8,7 @@ const schema = object({
   ),
   CLIENT_URL: string(),
   DB_URL: string(),
+  SECRET: string(),
 });
 
 const parsed = schema.safeParse(process.env);

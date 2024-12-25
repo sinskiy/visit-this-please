@@ -1,5 +1,5 @@
 import { Schema, connect, model } from "mongoose";
-import env from "../env.ts";
+import env from "../lib/env.ts";
 
 const testSchema = new Schema({
   hello: String,
