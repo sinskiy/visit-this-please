@@ -14,7 +14,7 @@ import authRouter from "./auth/router.ts";
 import passport from "passport";
 
 export const app = express();
-app.use(cors({ origin: env.CLIENT_URL }));
+app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use(passport.initialize());
 app.use(userSession);
 app.use(json());
