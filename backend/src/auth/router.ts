@@ -29,6 +29,11 @@ router.post("/sign-up", async (req, res) => {
 
   const { username, password } = parsedBody.data;
 
+  const userExists = await User.findOne({ username });
+  if (userExists) {
+    throw new ErrorWithStatus("Username is not unique", 400);
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   const [user] = await User.insertMany({ username, password: hashedPassword });
 
