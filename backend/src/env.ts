@@ -7,6 +7,7 @@ const schema = object({
     "development"
   ),
   CLIENT_URL: string(),
+  DB_URL: string(),
 });
 
 const parsed = schema.safeParse(process.env);
