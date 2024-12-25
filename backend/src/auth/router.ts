@@ -63,6 +63,14 @@ router.post("/log-out", (req, res) => {
   });
 });
 
+router.get("/auth", (req, res) => {
+  if (!req.user) {
+    throw new ErrorWithStatus("Unauthorized", 401);
+  }
+
+  res.json({ user: req.user });
+});
+
 // TODO: make ESLint working
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 router.get("/log-in/error", (_req, _res) => {
