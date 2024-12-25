@@ -4,7 +4,7 @@ export async function queryApi(path: string, options: RequestInit) {
   const response = await fetch(env.VITE_API_URL + path, options);
 
   if (!response.ok) {
-    if (response.headers.get("Content-Type") !== "application/json") {
+    if (!response.headers.get("Content-Type")?.includes("json")) {
       throw new Error(response.statusText);
     }
 
