@@ -9,6 +9,7 @@ import { Test } from "./db/config.ts";
 import { ErrorWithStatus } from "./lib/error.ts";
 import { userSession } from "./auth/config.ts";
 import env from "./lib/env.ts";
+import authRouter from "./auth/router.ts";
 
 export const app = express();
 app.use(cors({ origin: env.CLIENT_URL }));
@@ -19,6 +20,7 @@ app.get("/", async (_req, res) => {
   const test1 = await Test.findOne().exec();
   res.json({ hello: test1?.hello });
 });
+app.use("/", authRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
@@ -31,9 +33,9 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 
   if (err instanceof ErrorWithStatus) {
     res.status(err.status).json({ error: err.message });
+  } else {
+    res.status(500).json({ error: "internal server error" });
   }
-
-  res.status(500).json({ error: "internal server error" });
 });
 
 const port = env.PORT;
