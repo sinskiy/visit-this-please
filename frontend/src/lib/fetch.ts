@@ -1,6 +1,7 @@
 import env from "./env";
 
 export async function queryApi(path: string, options: RequestInit) {
+  options.credentials = "include";
   const response = await fetch(env.VITE_API_URL + path, options);
 
   if (!response.ok) {

@@ -2,9 +2,13 @@ import { mutateApi } from "./lib/fetch";
 import { infer as inferType, object, string } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useContext } from "react";
+import { UserContext } from "./user";
 
 export default function SignUp() {
+  const { user } = useContext(UserContext);
+
   const { mutation, onSignUp } = useSignUp();
 
   const {
@@ -12,6 +16,10 @@ export default function SignUp() {
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpSchema>({ resolver: zodResolver(signUpSchema) });
+
+  if (user) {
+    return;
+  }
 
   return (
     <form onSubmit={handleSubmit(onSignUp)}>
@@ -49,6 +57,8 @@ function useSignUp() {
     mutation.mutate({ username, password });
   };
 
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: ({
       username,
@@ -57,6 +67,8 @@ function useSignUp() {
       username: string;
       password: string;
     }) => mutateApi("POST", "/sign-up", { username, password }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["current-user"] }),
   });
 
   return { onSignUp, mutation };
