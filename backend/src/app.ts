@@ -2,6 +2,7 @@ import express, {
   type NextFunction,
   type Response,
   type Request,
+  json,
 } from "express";
 import { createServer } from "node:http";
 import cors from "cors";
@@ -10,10 +11,13 @@ import { ErrorWithStatus } from "./lib/error.ts";
 import { userSession } from "./auth/config.ts";
 import env from "./lib/env.ts";
 import authRouter from "./auth/router.ts";
+import passport from "passport";
 
 export const app = express();
 app.use(cors({ origin: env.CLIENT_URL }));
+app.use(passport.initialize());
 app.use(userSession);
+app.use(json());
 const server = createServer(app);
 
 app.get("/", async (_req, res) => {
