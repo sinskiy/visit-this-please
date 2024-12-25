@@ -13,6 +13,7 @@ export const userSession = session({
   store: MongoStore.create({ mongoUrl: env.DB_URL }),
   cookie: {
     httpOnly: true,
+    secure: env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 7,
   },
 });
