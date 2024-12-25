@@ -6,7 +6,6 @@ import express, {
 } from "express";
 import { createServer } from "node:http";
 import cors from "cors";
-import { Test } from "./db/config.ts";
 import { ErrorWithStatus } from "./lib/error.ts";
 import { userSession } from "./auth/config.ts";
 import env from "./lib/env.ts";
@@ -20,10 +19,6 @@ app.use(userSession);
 app.use(json());
 const server = createServer(app);
 
-app.get("/", async (_req, res) => {
-  const test1 = await Test.findOne().exec();
-  res.json({ hello: test1?.hello });
-});
 app.use("/", authRouter);
 
 app.use((_req, res) => {

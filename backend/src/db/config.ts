@@ -1,11 +1,6 @@
 import { Schema, connect, model } from "mongoose";
 import env from "../lib/env.ts";
 
-const testSchema = new Schema({
-  hello: String,
-});
-export const Test = model("Test", testSchema);
-
 const userSchema = new Schema({
   username: { type: String, unique: true },
   password: String,
