@@ -14,8 +14,8 @@ import passport from "passport";
 
 export const app = express();
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
-app.use(passport.initialize());
 app.use(userSession);
+app.use(passport.session());
 app.use(json());
 const server = createServer(app);
 
