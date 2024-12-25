@@ -1,18 +1,19 @@
 import { Router } from "express";
-import { authenticate } from "passport";
 import { ErrorWithStatus } from "../lib/error.ts";
-import { hash } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import { User } from "../db/config.ts";
+import passport from "passport";
 
 const router = Router();
 
 router.post("/sign-up", async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  if (!req.body?.username || !req.body?.password) {
     throw new ErrorWithStatus("No username or password", 400);
   }
 
-  const hashedPassword = await hash(password, 10);
+  const { username, password } = req.body;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
   const [user] = await User.insertMany({ username, password: hashedPassword });
   const sessionUser = { id: user?.id, username: user?.username };
   req.login(sessionUser, (err) => {
@@ -25,7 +26,7 @@ router.post("/sign-up", async (req, res) => {
 
 router.post(
   "/log-in",
-  authenticate("local", {
+  passport.authenticate("local", {
     failureRedirect: "/log-in/error",
     successRedirect: "/auth",
   })
@@ -45,3 +46,5 @@ router.post("/log-out", (req, res) => {
 router.get("/log-in/error", (_req, _res) => {
   throw new ErrorWithStatus("Unauthorized", 401);
 });
+
+export default router;

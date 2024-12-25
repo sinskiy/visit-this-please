@@ -1,7 +1,7 @@
-import { use } from "passport";
+import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { User } from "../db/config.ts";
-import { compare } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import MongoStore from "connect-mongo";
 import session from "express-session";
 import env from "../lib/env.ts";
@@ -17,23 +17,42 @@ export const userSession = session({
   },
 });
 
-use(
+passport.use(
   new LocalStrategy(async (username, password, cb) => {
     try {
       const user = await User.findOne({ username });
 
-      if (!user) {
+      if (!user || !user.username) {
         return cb(null, false, { message: "Incorrect username or password" });
       }
 
-      const isPasswordCorrect = compare(password, user.password!);
+      const isPasswordCorrect = bcrypt.compare(password, user.password!);
       if (!isPasswordCorrect) {
         return cb(null, false, { message: "Incorrect username or password" });
       }
 
-      return cb(null, { username: user.username });
+      return cb(null, { id: user.id, username: user.username });
     } catch (e) {
       return cb(e);
     }
   })
 );
+
+passport.serializeUser((user, cb) => {
+  // not sure what nextTick is for, but i follow the docs
+  process.nextTick(() => cb(null, { id: user?.id, username: user?.username }));
+});
+
+passport.deserializeUser((user, cb) => {
+  process.nextTick(() => cb(null, user as Express.User));
+});
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface User {
+      id: number;
+      username: string;
+    }
+  }
+}
