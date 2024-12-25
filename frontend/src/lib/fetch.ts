@@ -1,4 +1,4 @@
-import env from "../env";
+import env from "./env";
 
 export async function queryApi(path: string, options: RequestInit) {
   const response = await fetch(env.VITE_API_URL + path, options);
