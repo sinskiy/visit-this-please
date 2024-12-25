@@ -51,7 +51,7 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface User {
-      id: number;
+      id: string;
       username: string;
     }
   }

@@ -7,7 +7,7 @@ const testSchema = new Schema({
 export const Test = model("Test", testSchema);
 
 const userSchema = new Schema({
-  username: String,
+  username: { type: String, unique: true },
   password: String,
 });
 export const User = model("User", userSchema);
