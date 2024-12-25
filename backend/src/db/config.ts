@@ -1,4 +1,5 @@
 import { Schema, connect, model } from "mongoose";
+import env from "../env.ts";
 
 const testSchema = new Schema({
   hello: String,
@@ -7,7 +8,7 @@ const testSchema = new Schema({
 export const Test = model("Test", testSchema);
 
 try {
-  await connect("mongodb://localhost:27017/visit-this-please");
+  await connect(env.DB_URL);
 } catch (e) {
   console.error("❌ Mongoose error connecting:", e);
   process.exit(1);
