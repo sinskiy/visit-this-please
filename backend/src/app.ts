@@ -1,4 +1,8 @@
-import express from "express";
+import express, {
+  type NextFunction,
+  type Response,
+  type Request,
+} from "express";
 import { createServer } from "node:http";
 import env from "./env.ts";
 import cors from "cors";
@@ -11,6 +15,17 @@ const server = createServer(app);
 app.get("/", async (_req, res) => {
   const test1 = await Test.findOne().exec();
   res.json({ hello: test1?.hello });
+});
+
+app.use((_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+// TODO: for some reason argsIgnorePattern doesn't work
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+  res.status(500).json({ error: "Internal server error" });
 });
 
 const port = env.PORT;
