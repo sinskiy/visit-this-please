@@ -4,7 +4,8 @@ export async function queryApi(path: string, options: RequestInit) {
   options.credentials = "include";
   const response = await fetch(env.VITE_API_URL + path, options);
 
-  if (!response.ok) {
+  // to update user to null on log out
+  if (!response.ok && response.status !== 401) {
     if (!response.headers.get("Content-Type")?.includes("json")) {
       throw new Error(response.statusText);
     }
@@ -27,12 +28,13 @@ type HttpMutateMethod = "POST" | "PATCH";
 export async function mutateApi(
   method: HttpMutateMethod,
   path: string,
-  body: object,
+  body?: object,
   options?: RequestInit
 ) {
   return queryApi(path, {
     ...options,
     method,
+    credentials: "include",
     headers: { ...options?.headers, "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
