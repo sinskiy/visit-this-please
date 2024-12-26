@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryApi } from "./lib/fetch";
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import { User, UserContext } from "./user";
 
 export default function Provider({ children }: PropsWithChildren) {
@@ -10,9 +10,16 @@ export default function Provider({ children }: PropsWithChildren) {
   });
 
   const [user, setUser] = useState<null | User>(null);
-  if (data && !user) {
-    setUser(data.user);
-  }
+
+  useEffect(() => {
+    if (data) {
+      if ("user" in data && !user) {
+        setUser(data.user);
+      } else if (!("user" in data) && user) {
+        setUser(null);
+      }
+    }
+  }, [data]);
 
   return (
     <UserContext.Provider value={{ user, setUser, isError, isLoading, error }}>
