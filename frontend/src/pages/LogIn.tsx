@@ -27,6 +27,7 @@ export default function LogIn() {
 
   return (
     <form onSubmit={handleSubmit(onLogIn)}>
+      <label htmlFor="username">username</label>
       <input
         type="text"
         id="username"
@@ -34,6 +35,7 @@ export default function LogIn() {
         {...register("username")}
       />
       <p>{errors.username?.message}</p>
+      <label htmlFor="password">password</label>
       <input
         type="password"
         id="password"
