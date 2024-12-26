@@ -6,6 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../user";
 import { useNavigate } from "react-router";
+import InputField from "../ui/InputField";
+import Form from "../ui/Form";
 
 export default function SignUp() {
   const { mutation, onSignUp } = useSignUp();
@@ -26,36 +28,29 @@ export default function SignUp() {
   }, [user]);
 
   return (
-    <form onSubmit={handleSubmit(onSignUp)}>
-      <label htmlFor="username">username</label>
-      <input
-        type="text"
+    <Form mutation={mutation} onSubmit={handleSubmit(onSignUp)}>
+      <InputField
         id="username"
+        type="text"
         autoComplete="username"
         {...register("username")}
+        error={errors.username}
       />
-      <p>{errors.username?.message}</p>
-      <label htmlFor="password">password</label>
-      <input
-        type="password"
+      <InputField
         id="password"
+        type="password"
         autoComplete="new-password"
         {...register("password")}
+        error={errors.password}
       />
-      <p>{errors.password?.message}</p>
-      <label htmlFor="confirm-password">confirm password</label>
-      <input
-        type="password"
+      <InputField
         id="confirm-password"
+        type="password"
         autoComplete="new-password"
         {...register("confirmPassword")}
+        error={errors.confirmPassword}
       />
-      <p>{errors.confirmPassword?.message}</p>
-      <button type="submit" disabled={mutation.isPending}>
-        submit
-      </button>
-      <p>{mutation.isError && mutation.error.message}</p>
-    </form>
+    </Form>
   );
 }
 
