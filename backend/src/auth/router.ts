@@ -35,7 +35,9 @@ router.post("/sign-up", async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const [user] = await User.insertMany({ username, password: hashedPassword });
+  const [user] = await User.insertMany([
+    { username, password: hashedPassword },
+  ]);
 
   const parsedUser = UserSchema.safeParse(user);
   if (!parsedUser.success) {
