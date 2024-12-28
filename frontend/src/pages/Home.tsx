@@ -59,7 +59,7 @@ export default function Home() {
                     id={`vote-${place._id}-up`}
                     onChange={() => mutate({ type: "UP", id: place._id })}
                     disabled={isVoteLoading}
-                    defaultChecked={place.voted === "UP"}
+                    checked={place.voted === "UP"}
                   />
                   <label htmlFor={`vote-${place._id}-down`}>down</label>
                   <input
@@ -68,7 +68,7 @@ export default function Home() {
                     id={`vote-${place._id}-down`}
                     onChange={() => mutate({ type: "DOWN", id: place._id })}
                     disabled={isVoteLoading}
-                    defaultChecked={place.voted === "DOWN"}
+                    checked={place.voted === "DOWN"}
                   />
                 </>
               )}
@@ -143,7 +143,9 @@ function useVote() {
     mutationFn: ({ type, id }: { type: "UP" | "DOWN"; id: string }) => {
       return mutateApi("PATCH", `/places/${id}/votes`, { type });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["places"] }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["places"] });
+    },
   });
 
   return mutation;
