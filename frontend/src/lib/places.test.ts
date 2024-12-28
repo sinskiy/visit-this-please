@@ -29,6 +29,9 @@ describe("getFormattedPlace", () => {
     ).toBe("sinskiy, house, street, settlement, region, country");
   });
 
+  /**
+   * @deprecated
+   */
   test("non-gradual place is returned correctly", () => {
     expect(
       getFormattedPlace({
