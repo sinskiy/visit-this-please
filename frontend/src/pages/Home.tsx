@@ -193,9 +193,6 @@ function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
   return { mutation, onAddPlace };
 }
 
-// TODO: if (city) typeof stateOrRegion === "string", etc.
-// TODO: "not in a settlement" switch
-// TODO: "rate the street itself" and "rate the house itself" switch
 const addPlaceSchema = object({
   country: string().min(1).max(50),
   stateOrRegion: string().optional(),
@@ -204,6 +201,23 @@ const addPlaceSchema = object({
 
   street: string().optional(),
   house: string().optional(),
-});
+}).refine(
+  ({ stateOrRegion, settlement, street, house, name }) => {
+    let settlementIsFine = true,
+      streetIsFine = true,
+      houseIsFine = true;
+    if (settlement) {
+      settlementIsFine = !!stateOrRegion;
+    }
+    if (street) {
+      streetIsFine = !!settlement && !!name;
+    }
+    if (house) {
+      houseIsFine = !!street && !!name;
+    }
+    return settlementIsFine && streetIsFine && houseIsFine;
+  },
+  { message: "Data must be gradual", path: ["house"] }
+);
 
 type AddPlaceSchema = inferType<typeof addPlaceSchema>;

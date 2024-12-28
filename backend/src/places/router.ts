@@ -6,8 +6,7 @@ import { Place } from "../db/config.ts";
 
 const router = Router();
 
-// TODO: if (city) typeof stateOrRegion === "string", etc.
-// TODO: "not in a settlement" switch
+// TODO: "not in a settlement" and "not in a state/region" switch
 // TODO: "rate the street itself" and "rate the house itself" switch
 const addPlaceSchema = object({
   country: string().min(1).max(50),
@@ -17,6 +16,20 @@ const addPlaceSchema = object({
 
   street: string().optional(),
   house: string().optional(),
+}).refine(({ stateOrRegion, settlement, street, house, name }) => {
+  let settlementIsFine = true,
+    streetIsFine = true,
+    houseIsFine = true;
+  if (settlement) {
+    settlementIsFine = !!stateOrRegion;
+  }
+  if (street) {
+    streetIsFine = !!settlement && !!name;
+  }
+  if (house) {
+    houseIsFine = !!street && !!name;
+  }
+  return settlementIsFine && streetIsFine && houseIsFine;
 });
 
 router.get("/", async (req, res) => {
@@ -69,7 +82,6 @@ router.get("/", async (req, res) => {
   );
 });
 
-// TODO: update queries by just pushing the response
 router.post("/", isUser, async (req, res) => {
   const parsedSchema = addPlaceSchema.safeParse(req.body);
 
