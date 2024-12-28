@@ -10,6 +10,7 @@ import { ErrorWithStatus } from "./lib/error.ts";
 import { userSession } from "./auth/config.ts";
 import env from "./lib/env.ts";
 import authRouter from "./auth/router.ts";
+import placesRouter from "./places/router.ts";
 import passport from "passport";
 
 export const app = express();
@@ -20,6 +21,7 @@ app.use(json());
 const server = createServer(app);
 
 app.use("/", authRouter);
+app.use("/places", placesRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
