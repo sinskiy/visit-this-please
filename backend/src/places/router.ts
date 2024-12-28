@@ -23,15 +23,32 @@ router.get("/", async (req, res) => {
   const places = await Place.find();
 
   res.json(
-    places.map(({ votes, ...place }) => {
-      const voted = votes.find(
-        ({ userId }) => userId.toString() === req.user?.id
-      )?.type;
-      return {
-        ...place,
-        voted,
-      };
-    })
+    places.map(
+      ({
+        country,
+        stateOrRegion,
+        settlement,
+        name,
+        street,
+        house,
+        _id,
+        votes,
+      }) => {
+        const voted = votes.find(
+          ({ userId }) => userId.toString() === req.user?.id
+        )?.type;
+        return {
+          _id,
+          country,
+          stateOrRegion,
+          settlement,
+          name,
+          street,
+          house,
+          voted,
+        };
+      }
+    )
   );
 });
 
@@ -93,7 +110,10 @@ router.patch("/:id/votes", isUser, async (req, res) => {
 
   await place.save();
 
-  res.json(place);
+  const { country, stateOrRegion, settlement, name, street, house, _id } =
+    place;
+
+  res.json({ country, stateOrRegion, settlement, name, street, house, _id });
 });
 
 export default router;

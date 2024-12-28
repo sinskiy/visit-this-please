@@ -18,6 +18,7 @@ export async function queryApi(path: string, options?: RequestInit) {
   }
 
   const json = await response.json();
+  console.log(json);
   return json;
 }
 
