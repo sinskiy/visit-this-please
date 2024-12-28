@@ -71,11 +71,6 @@ router.get("/", async (req, res) => {
 
 // TODO: update queries by just pushing the response
 router.post("/", isUser, async (req, res) => {
-  // TODO: abstract the validation
-  if (!req.body?.country) {
-    throw new ErrorWithStatus("No country", 400);
-  }
-
   const parsedSchema = addPlaceSchema.safeParse(req.body);
 
   if (!parsedSchema.success) {
@@ -90,14 +85,7 @@ router.post("/", isUser, async (req, res) => {
     throw new Error();
   }
 
-  res.json({
-    country: place.country,
-    stateOrRegion: place.stateOrRegion,
-    settlement: place.settlement,
-    name: place.name,
-    street: place.street,
-    house: place.house,
-  });
+  res.json({ status: "success" });
 });
 
 router.patch("/:id/votes", isUser, async (req, res) => {
@@ -127,10 +115,7 @@ router.patch("/:id/votes", isUser, async (req, res) => {
 
   await place.save();
 
-  const { country, stateOrRegion, settlement, name, street, house, _id } =
-    place;
-
-  res.json({ country, stateOrRegion, settlement, name, street, house, _id });
+  res.json({ status: "success" });
 });
 
 export default router;
