@@ -22,14 +22,6 @@ export default function Home() {
 
   const { isPending: isVoteLoading, error: voteError, mutate } = useVote();
 
-  const { mutation, onAddPlace } = useAddPlace(dialogRef);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
-
   return (
     <>
       <p>
@@ -50,28 +42,11 @@ export default function Home() {
           {data!.map((place) => (
             <li key={place._id}>
               <p>{getFormattedPlace(place)}</p>
-              <>
-                <label htmlFor={`vote-${place._id}-up`}>up {place.up}</label>
-                <input
-                  type="radio"
-                  name={`vote-${place._id}`}
-                  id={`vote-${place._id}-up`}
-                  onChange={() => mutate({ type: "UP", id: place._id })}
-                  disabled={!user || isVoteLoading}
-                  checked={place.voted === "UP"}
-                />
-                <label htmlFor={`vote-${place._id}-down`}>
-                  down {place.down}
-                </label>
-                <input
-                  type="radio"
-                  name={`vote-${place._id}`}
-                  id={`vote-${place._id}-down`}
-                  onChange={() => mutate({ type: "DOWN", id: place._id })}
-                  disabled={!user || isVoteLoading}
-                  checked={place.voted === "DOWN"}
-                />
-              </>
+              <Votes
+                place={place}
+                mutate={mutate}
+                isVoteLoading={isVoteLoading}
+              />
             </li>
           ))}
         </ul>
@@ -85,54 +60,102 @@ export default function Home() {
       )}
       {createPortal(
         <dialog ref={dialogRef} id="add-place">
-          <Form mutation={mutation} onSubmit={handleSubmit(onAddPlace)}>
-            {/* TODO: search from countries list */}
-            <InputField
-              id="country"
-              type="text"
-              error={errors.country}
-              {...register("country")}
-            />
-            {/* TODO: search from db */}
-            <InputField
-              id="state-or-region"
-              label="state or region"
-              type="text"
-              error={errors.stateOrRegion}
-              {...register("stateOrRegion")}
-            />
-            <InputField
-              id="settlement"
-              type="text"
-              error={errors.settlement}
-              {...register("settlement")}
-            />
-            <InputField
-              id="name"
-              type="text"
-              error={errors.name}
-              {...register("name")}
-            />
-            <InputField
-              id="street"
-              type="text"
-              error={errors.street}
-              {...register("street")}
-            />
-            <InputField
-              id="house"
-              type="text"
-              error={errors.house}
-              {...register("house")}
-            />
-          </Form>
           <form method="dialog">
+            <AddPlace dialogRef={dialogRef} />
             <button type="submit">cancel</button>
           </form>
         </dialog>,
         document.body
       )}
     </>
+  );
+}
+
+function Votes({
+  place,
+  mutate,
+  isVoteLoading,
+}: {
+  place: Place;
+  mutate: ReturnType<typeof useVote>["mutate"];
+  isVoteLoading: boolean;
+}) {
+  const { user } = useContext(UserContext);
+  return (
+    <>
+      <label htmlFor={`vote-${place._id}-up`}>up {place.up}</label>
+      <input
+        type="radio"
+        name={`vote-${place._id}`}
+        id={`vote-${place._id}-up`}
+        onChange={() => mutate({ type: "UP", id: place._id })}
+        disabled={!user || isVoteLoading}
+        checked={place.voted === "UP"}
+      />
+      <label htmlFor={`vote-${place._id}-down`}>down {place.down}</label>
+      <input
+        type="radio"
+        name={`vote-${place._id}`}
+        id={`vote-${place._id}-down`}
+        onChange={() => mutate({ type: "DOWN", id: place._id })}
+        disabled={!user || isVoteLoading}
+        checked={place.voted === "DOWN"}
+      />
+    </>
+  );
+}
+
+function AddPlace({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement> }) {
+  const { mutation, onAddPlace } = useAddPlace(dialogRef);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
+
+  return (
+    <Form mutation={mutation} onSubmit={handleSubmit(onAddPlace)}>
+      {/* TODO: search from countries list */}
+      <InputField
+        id="country"
+        type="text"
+        error={errors.country}
+        {...register("country")}
+      />
+      {/* TODO: search from db */}
+      <InputField
+        id="state-or-region"
+        label="state or region"
+        type="text"
+        error={errors.stateOrRegion}
+        {...register("stateOrRegion")}
+      />
+      <InputField
+        id="settlement"
+        type="text"
+        error={errors.settlement}
+        {...register("settlement")}
+      />
+      <InputField
+        id="name"
+        type="text"
+        error={errors.name}
+        {...register("name")}
+      />
+      <InputField
+        id="street"
+        type="text"
+        error={errors.street}
+        {...register("street")}
+      />
+      <InputField
+        id="house"
+        type="text"
+        error={errors.house}
+        {...register("house")}
+      />
+    </Form>
   );
 }
 
