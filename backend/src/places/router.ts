@@ -34,9 +34,24 @@ router.get("/", async (req, res) => {
         _id,
         votes,
       }) => {
-        const voted = votes.find(
-          ({ userId }) => userId.toString() === req.user?.id
-        )?.type;
+        let voted: "UP" | "DOWN" | undefined;
+        let up = 0;
+        let down = 0;
+
+        for (const { userId, type } of votes) {
+          if (userId.toString() === req.user?.id) {
+            voted = type;
+          }
+
+          switch (type) {
+            case "UP":
+              up++;
+              break;
+            case "DOWN":
+              down++;
+          }
+        }
+
         return {
           _id,
           country,
@@ -46,6 +61,8 @@ router.get("/", async (req, res) => {
           street,
           house,
           voted,
+          up,
+          down,
         };
       }
     )

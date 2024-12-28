@@ -16,7 +16,7 @@ export default function Home() {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const { data, isError, isLoading, error } = useQuery<Place[]>({
-    queryKey: ["places"],
+    queryKey: ["places", user?.id],
     queryFn: () => queryApi("/places", { credentials: "include" }),
   });
 
@@ -50,28 +50,28 @@ export default function Home() {
           {data!.map((place) => (
             <li key={place._id}>
               <p>{getFormattedPlace(place)}</p>
-              {user && (
-                <>
-                  <label htmlFor={`vote-${place._id}-up`}>up</label>
-                  <input
-                    type="radio"
-                    name={`vote-${place._id}`}
-                    id={`vote-${place._id}-up`}
-                    onChange={() => mutate({ type: "UP", id: place._id })}
-                    disabled={isVoteLoading}
-                    checked={place.voted === "UP"}
-                  />
-                  <label htmlFor={`vote-${place._id}-down`}>down</label>
-                  <input
-                    type="radio"
-                    name={`vote-${place._id}`}
-                    id={`vote-${place._id}-down`}
-                    onChange={() => mutate({ type: "DOWN", id: place._id })}
-                    disabled={isVoteLoading}
-                    checked={place.voted === "DOWN"}
-                  />
-                </>
-              )}
+              <>
+                <label htmlFor={`vote-${place._id}-up`}>up {place.up}</label>
+                <input
+                  type="radio"
+                  name={`vote-${place._id}`}
+                  id={`vote-${place._id}-up`}
+                  onChange={() => mutate({ type: "UP", id: place._id })}
+                  disabled={!user || isVoteLoading}
+                  checked={place.voted === "UP"}
+                />
+                <label htmlFor={`vote-${place._id}-down`}>
+                  down {place.down}
+                </label>
+                <input
+                  type="radio"
+                  name={`vote-${place._id}`}
+                  id={`vote-${place._id}-down`}
+                  onChange={() => mutate({ type: "DOWN", id: place._id })}
+                  disabled={!user || isVoteLoading}
+                  checked={place.voted === "DOWN"}
+                />
+              </>
             </li>
           ))}
         </ul>

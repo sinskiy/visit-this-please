@@ -7,9 +7,11 @@ export interface Place {
   street?: string;
   house?: string;
   voted?: "UP" | "DOWN";
+  up: number;
+  down: number;
 }
 
-export function getFormattedPlace(place: Place) {
+export function getFormattedPlace(place: Partial<Place>) {
   let formattedPlace = "";
   formattedPlace = extendFormattedPlace(formattedPlace, place.name);
   formattedPlace = extendFormattedPlace(formattedPlace, place.house);
