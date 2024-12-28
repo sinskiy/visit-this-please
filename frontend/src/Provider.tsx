@@ -22,6 +22,7 @@ export default function Provider({ children }: PropsWithChildren) {
   }, [data]);
 
   return (
+    // TODO: better handle error and loading
     <UserContext.Provider value={{ user, setUser, isError, isLoading, error }}>
       {children}
     </UserContext.Provider>
