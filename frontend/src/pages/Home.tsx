@@ -8,6 +8,7 @@ import { infer as inferType, object, string } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../ui/InputField";
+import { getFormattedPlace, Place } from "../lib/places";
 
 export default function Home() {
   const { user } = useContext(UserContext);
@@ -133,32 +134,3 @@ const addPlaceSchema = object({
 });
 
 type AddPlaceSchema = inferType<typeof addPlaceSchema>;
-
-interface Place {
-  _id: string;
-  country: string;
-  stateOrRegion?: string;
-  settlement?: string;
-  name?: string;
-  street?: string;
-  house?: string;
-}
-
-function getFormattedPlace(place: Place) {
-  let formattedPlace = "";
-  formattedPlace = extendFormattedPlace(formattedPlace, place.name);
-  formattedPlace = extendFormattedPlace(formattedPlace, place.house);
-  formattedPlace = extendFormattedPlace(formattedPlace, place.street);
-  formattedPlace = extendFormattedPlace(formattedPlace, place.settlement);
-  formattedPlace = extendFormattedPlace(formattedPlace, place.stateOrRegion);
-  formattedPlace = extendFormattedPlace(formattedPlace, place.country);
-  // remove last ", "
-  return formattedPlace.slice(0, -2);
-}
-
-function extendFormattedPlace(place: string, value?: string) {
-  if (value) {
-    place += `${value}, `;
-  }
-  return place;
-}
