@@ -19,6 +19,12 @@ const addPlaceSchema = object({
   house: string().optional(),
 });
 
+router.get("/", async (_req, res) => {
+  const places = await Place.find();
+
+  res.json(places);
+});
+
 router.post("/", isUser, async (req, res) => {
   // TODO: abstract the validation
   if (!req.body?.country) {

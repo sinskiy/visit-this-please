@@ -2,8 +2,8 @@ import { RefObject, useContext, useRef } from "react";
 import { UserContext } from "../user";
 import { createPortal } from "react-dom";
 import Form from "../ui/Form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi } from "../lib/fetch";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { mutateApi, queryApi } from "../lib/fetch";
 import { infer as inferType, object, string } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,11 @@ export default function Home() {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  const { data, isError, isLoading, error } = useQuery<Place[]>({
+    queryKey: ["places"],
+    queryFn: () => queryApi("/places"),
+  });
+
   const { mutation, onAddPlace } = useAddPlace(dialogRef);
 
   const {
@@ -23,12 +28,24 @@ export default function Home() {
   } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
 
   return (
-    <p>
-      hello, {user?.username ?? "world"}
-      {user && (
-        <button onClick={() => dialogRef.current?.showModal()}>
-          add place
-        </button>
+    <>
+      <p>
+        hello, {user?.username ?? "world"}
+        {user && (
+          <button onClick={() => dialogRef.current?.showModal()}>
+            add place
+          </button>
+        )}
+      </p>
+      {/* TODO: better loading (skeleton) and error */}
+      {isLoading === true ? (
+        <p>loading...</p>
+      ) : isError === true ? (
+        <p>{error.message}</p>
+      ) : data!.length > 0 ? (
+        data!.map((place) => <p key={place._id}>{place.country}</p>)
+      ) : (
+        <p>no places</p>
       )}
       {createPortal(
         <dialog ref={dialogRef} id="add-place">
@@ -79,7 +96,7 @@ export default function Home() {
         </dialog>,
         document.body
       )}
-    </p>
+    </>
   );
 }
 
@@ -116,3 +133,13 @@ const addPlaceSchema = object({
 });
 
 type AddPlaceSchema = inferType<typeof addPlaceSchema>;
+
+interface Place {
+  _id: string;
+  country: string;
+  stateOrRegion?: string;
+  settlement?: string;
+  name?: string;
+  street?: string;
+  house?: string;
+}
