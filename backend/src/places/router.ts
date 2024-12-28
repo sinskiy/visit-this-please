@@ -55,4 +55,34 @@ router.post("/", isUser, async (req, res) => {
   });
 });
 
+router.patch("/:id/votes", isUser, async (req, res) => {
+  const { id } = req.params;
+
+  if (!req.body.type) {
+    throw new ErrorWithStatus("No type", 400);
+  }
+
+  const place = await Place.findById(id);
+
+  if (!place) {
+    throw new Error();
+  }
+
+  let voted = false;
+  place.votes.map((vote) => {
+    if (vote.userId.toString() === req.user?.id) {
+      voted = true;
+      vote.type = req.body.type;
+    }
+    return vote;
+  });
+  if (!voted) {
+    place.votes.push({ type: req.body.type, userId: req.user!.id });
+  }
+
+  await place.save();
+
+  res.json(place);
+});
+
 export default router;

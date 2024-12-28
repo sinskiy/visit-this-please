@@ -20,6 +20,8 @@ export default function Home() {
     queryFn: () => queryApi("/places"),
   });
 
+  const { isPending: isVoteLoading, error: voteError, mutate } = useVote();
+
   const { mutation, onAddPlace } = useAddPlace(dialogRef);
 
   const {
@@ -44,9 +46,40 @@ export default function Home() {
       ) : isError === true ? (
         <p>{error.message}</p>
       ) : data!.length > 0 ? (
-        data!.map((place) => <p key={place._id}>{getFormattedPlace(place)}</p>)
+        <ul>
+          {data!.map((place) => (
+            <li key={place._id}>
+              <p>{getFormattedPlace(place)}</p>
+              {user && (
+                <>
+                  <label htmlFor={`vote-${place._id}-up`}>up</label>
+                  <input
+                    type="radio"
+                    name={`vote-${place._id}`}
+                    id={`vote-${place._id}-up`}
+                    onChange={() => mutate({ type: "UP", id: place._id })}
+                    disabled={isVoteLoading}
+                  />
+                  <label htmlFor={`vote-${place._id}-down`}>down</label>
+                  <input
+                    type="radio"
+                    name={`vote-${place._id}`}
+                    id={`vote-${place._id}-down`}
+                    onChange={() => mutate({ type: "DOWN", id: place._id })}
+                    disabled={isVoteLoading}
+                  />
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
       ) : (
         <p>no places</p>
+      )}
+      {isVoteLoading ? (
+        <p>voting...</p>
+      ) : (
+        voteError && <p>{voteError.message}</p>
       )}
       {createPortal(
         <dialog ref={dialogRef} id="add-place">
@@ -99,6 +132,18 @@ export default function Home() {
       )}
     </>
   );
+}
+
+function useVote() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: ({ type, id }: { type: "UP" | "DOWN"; id: string }) =>
+      mutateApi("PATCH", `/places/${id}/votes`, { type }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["places"] }),
+  });
+
+  return mutation;
 }
 
 function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
