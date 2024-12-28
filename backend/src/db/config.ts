@@ -8,8 +8,15 @@ const userSchema = new Schema({
 export const User = model("User", userSchema);
 
 const placeSchema = new Schema({
-  primaryText: String,
-  secondaryText: String,
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
+
+  country: { type: String, required: true },
+  stateOrRegion: String,
+  settlement: String,
+  name: String,
+
+  street: String,
+  house: String,
 });
 export const Place = model("Place", placeSchema);
 
