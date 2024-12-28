@@ -38,6 +38,9 @@ router.post("/sign-up", async (req, res) => {
   const [user] = await User.insertMany([
     { username, password: hashedPassword },
   ]);
+  if (!user) {
+    throw new Error();
+  }
 
   const parsedUser = UserSchema.safeParse(user);
   if (!parsedUser.success) {
@@ -46,7 +49,7 @@ router.post("/sign-up", async (req, res) => {
 
   req.login(parsedUser.data, (err) => {
     if (err) {
-      throw new ErrorWithStatus("Couldn't log in", 500);
+      throw new Error();
     }
     res.json({ user: parsedUser.data });
   });
@@ -64,7 +67,7 @@ router.post("/log-out", (req, res) => {
   res.clearCookie("connect.sid", { path: "/", httpOnly: true });
   req.logout((err) => {
     if (err) {
-      throw new ErrorWithStatus("Couldn't log out", 500);
+      throw new Error();
     }
     res.json({ status: "success" });
   });
