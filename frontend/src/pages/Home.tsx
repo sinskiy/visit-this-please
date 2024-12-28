@@ -1,8 +1,8 @@
-import { useContext, useRef } from "react";
+import { RefObject, useContext, useRef } from "react";
 import { UserContext } from "../user";
 import { createPortal } from "react-dom";
 import Form from "../ui/Form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "../lib/fetch";
 import { infer as inferType, object, string } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -14,7 +14,7 @@ export default function Home() {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const { mutation, onAddPlace } = useAddPlace();
+  const { mutation, onAddPlace } = useAddPlace(dialogRef);
 
   const {
     register,
@@ -83,14 +83,20 @@ export default function Home() {
   );
 }
 
-function useAddPlace() {
+function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
   const onAddPlace: SubmitHandler<AddPlaceSchema> = (placeObject) => {
     mutation.mutate(placeObject);
   };
 
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: (placeObject: AddPlaceSchema) =>
       mutateApi("POST", "/places", placeObject, { credentials: "include" }),
+    onSuccess: () => {
+      dialogRef.current?.close();
+      queryClient.invalidateQueries({ queryKey: ["places"] });
+    },
   });
 
   return { mutation, onAddPlace };
