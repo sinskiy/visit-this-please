@@ -1,7 +1,6 @@
 import env from "./env";
 
-export async function queryApi(path: string, options: RequestInit) {
-  options.credentials = "include";
+export async function queryApi(path: string, options?: RequestInit) {
   const response = await fetch(env.VITE_API_URL + path, options);
 
   // to update user to null on log out
