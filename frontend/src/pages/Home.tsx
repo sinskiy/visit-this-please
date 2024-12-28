@@ -17,7 +17,7 @@ export default function Home() {
 
   const { data, isError, isLoading, error } = useQuery<Place[]>({
     queryKey: ["places"],
-    queryFn: () => queryApi("/places"),
+    queryFn: () => queryApi("/places", { credentials: "include" }),
   });
 
   const { isPending: isVoteLoading, error: voteError, mutate } = useVote();
@@ -59,6 +59,7 @@ export default function Home() {
                     id={`vote-${place._id}-up`}
                     onChange={() => mutate({ type: "UP", id: place._id })}
                     disabled={isVoteLoading}
+                    defaultChecked={place.voted === "UP"}
                   />
                   <label htmlFor={`vote-${place._id}-down`}>down</label>
                   <input
@@ -67,6 +68,7 @@ export default function Home() {
                     id={`vote-${place._id}-down`}
                     onChange={() => mutate({ type: "DOWN", id: place._id })}
                     disabled={isVoteLoading}
+                    defaultChecked={place.voted === "DOWN"}
                   />
                 </>
               )}
@@ -138,8 +140,9 @@ function useVote() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({ type, id }: { type: "UP" | "DOWN"; id: string }) =>
-      mutateApi("PATCH", `/places/${id}/votes`, { type }),
+    mutationFn: ({ type, id }: { type: "UP" | "DOWN"; id: string }) => {
+      return mutateApi("PATCH", `/places/${id}/votes`, { type });
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["places"] }),
   });
 

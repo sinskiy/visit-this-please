@@ -6,6 +6,7 @@ export interface Place {
   name?: string;
   street?: string;
   house?: string;
+  voted?: "UP" | "DOWN";
 }
 
 export function getFormattedPlace(place: Place) {

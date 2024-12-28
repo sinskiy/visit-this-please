@@ -19,12 +19,23 @@ const addPlaceSchema = object({
   house: string().optional(),
 });
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
   const places = await Place.find();
 
-  res.json(places);
+  res.json(
+    places.map(({ votes, ...place }) => {
+      const voted = votes.find(
+        ({ userId }) => userId.toString() === req.user?.id
+      )?.type;
+      return {
+        ...place,
+        voted,
+      };
+    })
+  );
 });
 
+// TODO: update queries by just pushing the response
 router.post("/", isUser, async (req, res) => {
   // TODO: abstract the validation
   if (!req.body?.country) {
