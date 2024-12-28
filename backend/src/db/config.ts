@@ -2,8 +2,8 @@ import { Schema, connect, model } from "mongoose";
 import env from "../lib/env.ts";
 
 const userSchema = new Schema({
-  username: { type: String, unique: true },
-  password: String,
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
 });
 export const User = model("User", userSchema);
 
@@ -18,7 +18,7 @@ const voteSchema = new Schema({
 });
 
 const placeSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 
   country: { type: String, required: true },
   stateOrRegion: String,
