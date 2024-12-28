@@ -60,8 +60,8 @@ export default function Home() {
       )}
       {createPortal(
         <dialog ref={dialogRef} id="add-place">
+          <AddPlace dialogRef={dialogRef} />
           <form method="dialog">
-            <AddPlace dialogRef={dialogRef} />
             <button type="submit">cancel</button>
           </form>
         </dialog>,
