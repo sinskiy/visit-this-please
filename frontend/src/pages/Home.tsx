@@ -43,7 +43,7 @@ export default function Home() {
       ) : isError === true ? (
         <p>{error.message}</p>
       ) : data!.length > 0 ? (
-        data!.map((place) => <p key={place._id}>{place.country}</p>)
+        data!.map((place) => <p key={place._id}>{getFormattedPlace(place)}</p>)
       ) : (
         <p>no places</p>
       )}
@@ -142,4 +142,23 @@ interface Place {
   name?: string;
   street?: string;
   house?: string;
+}
+
+function getFormattedPlace(place: Place) {
+  let formattedPlace = "";
+  formattedPlace = extendFormattedPlace(formattedPlace, place.name);
+  formattedPlace = extendFormattedPlace(formattedPlace, place.house);
+  formattedPlace = extendFormattedPlace(formattedPlace, place.street);
+  formattedPlace = extendFormattedPlace(formattedPlace, place.settlement);
+  formattedPlace = extendFormattedPlace(formattedPlace, place.stateOrRegion);
+  formattedPlace = extendFormattedPlace(formattedPlace, place.country);
+  // remove last ", "
+  return formattedPlace.slice(0, -2);
+}
+
+function extendFormattedPlace(place: string, value?: string) {
+  if (value) {
+    place += `${value}, `;
+  }
+  return place;
 }
