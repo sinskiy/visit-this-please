@@ -7,6 +7,16 @@ const userSchema = new Schema({
 });
 export const User = model("User", userSchema);
 
+const voteSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+
+  type: {
+    type: String,
+    enum: ["UP", "DOWN"],
+    required: true,
+  },
+});
+
 const placeSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User" },
 
@@ -17,6 +27,8 @@ const placeSchema = new Schema({
 
   street: String,
   house: String,
+
+  votes: [voteSchema],
 });
 export const Place = model("Place", placeSchema);
 
