@@ -71,6 +71,20 @@ router.get("/", async (req, res) => {
             b.votes.filter((vote) => vote.type === "DOWN").length)
       );
       break;
+    case "last-voted":
+      places.sort(
+        (a, b) =>
+          Math.max(
+            ...b.votes.map((vote) => vote._id.getTimestamp().getTime())
+          ) -
+          Math.max(...a.votes.map((vote) => vote._id.getTimestamp().getTime()))
+      );
+      break;
+    case "last-added":
+      places.sort(
+        (a, b) =>
+          b._id.getTimestamp().getTime() - a._id.getTimestamp().getTime()
+      );
   }
 
   res.json(
