@@ -32,7 +32,46 @@ const addPlaceSchema = object({
 });
 
 router.get("/", async (req, res) => {
+  const { sort = "positivity" } = req.query;
+
   const places = await Place.find();
+  switch (sort) {
+    case "votes":
+      places.sort((a, b) => b.votes.length - a.votes.length);
+      break;
+    case "upvotes":
+      places.sort(
+        (a, b) =>
+          b.votes.filter((vote) => vote.type === "UP").length -
+          a.votes.filter((vote) => vote.type === "UP").length
+      );
+      break;
+    case "downvotes":
+      places.sort(
+        (a, b) =>
+          b.votes.filter((vote) => vote.type === "DOWN").length -
+          a.votes.filter((vote) => vote.type === "DOWN").length
+      );
+      break;
+    case "positivity":
+      places.sort(
+        (a, b) =>
+          b.votes.filter((vote) => vote.type === "UP").length -
+          b.votes.filter((vote) => vote.type === "DOWN").length -
+          (a.votes.filter((vote) => vote.type === "UP").length -
+            a.votes.filter((vote) => vote.type === "DOWN").length)
+      );
+      break;
+    case "negativity":
+      places.sort(
+        (a, b) =>
+          a.votes.filter((vote) => vote.type === "UP").length -
+          a.votes.filter((vote) => vote.type === "DOWN").length -
+          (b.votes.filter((vote) => vote.type === "UP").length -
+            b.votes.filter((vote) => vote.type === "DOWN").length)
+      );
+      break;
+  }
 
   res.json(
     places.map(
