@@ -11,12 +11,17 @@ export default function Home() {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const { data, isLoading, error } = useQuery<Place[]>({
+  const { data, isLoading, isError, error } = useQuery<Place[]>({
     queryKey: ["places", user?.id],
     queryFn: () => queryApi("/places", { credentials: "include" }),
   });
 
-  const { isPending: isVoteLoading, error: voteError, mutate } = useVote();
+  const {
+    isPending: isVoteLoading,
+    isError: isVoteError,
+    error: voteError,
+    mutate,
+  } = useVote();
 
   return (
     <>
@@ -29,9 +34,9 @@ export default function Home() {
       {/* TODO: better loading (skeleton) */}
       {isLoading === true ? (
         <p>loading...</p>
-      ) : error ? (
-        <p>{error.message}</p>
-      ) : data!.length > 0 ? (
+      ) : isError || !data ? (
+        <p>{error?.message || "Unexpected error"}</p>
+      ) : data.length > 0 ? (
         <ul>
           {data!.map((place) => (
             <li key={place._id}>
@@ -50,7 +55,7 @@ export default function Home() {
       {isVoteLoading ? (
         <p>voting...</p>
       ) : (
-        voteError && <p>{voteError.message}</p>
+        isVoteError && <p>{voteError.message}</p>
       )}
       {createPortal(
         <dialog ref={dialogRef} id="add-place">

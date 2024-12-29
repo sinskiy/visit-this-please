@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "./lib/fetch";
 
 export default function Layout() {
-  const { user, setUser, isLoading, error } = useContext(UserContext);
+  const { user, setUser, isLoading, isError, error } = useContext(UserContext);
 
   const queryClient = useQueryClient();
   const { isPending, mutate } = useMutation({
@@ -33,7 +33,9 @@ export default function Layout() {
         )}
       </header>
       <main>
-        {error && error.message !== "Unauthorized" && <p>{error.message}</p>}
+        {isError && error!.message !== "Unauthorized" && (
+          <p>{error!.message}</p>
+        )}
         <Outlet />
       </main>
     </>
