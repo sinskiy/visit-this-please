@@ -1,4 +1,4 @@
-import { ChangeEvent, RefObject, useContext, useRef, useState } from "react";
+import { RefObject, useContext, useRef, useState } from "react";
 import { UserContext } from "../user";
 import { createPortal } from "react-dom";
 import Form from "../ui/Form";
@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../ui/InputField";
 import { getFormattedPlace, Place } from "../lib/places";
 import { COUNTRIES } from "../lib/const";
+import InputFieldWithSelect from "../ui/InputFieldWithSelect";
 
 export default function Home() {
   const { user } = useContext(UserContext);
@@ -106,7 +107,6 @@ function Votes({
   );
 }
 
-let timeout: NodeJS.Timeout;
 function AddPlace({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement> }) {
   const { mutation, onAddPlace } = useAddPlace(dialogRef);
 
@@ -117,22 +117,7 @@ function AddPlace({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement> }) {
     formState: { errors },
   } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
 
-  const [search, setSearch] = useState("");
   const [isSelected, setIsSelected] = useState(false);
-  const countries = COUNTRIES.filter((country) =>
-    country.toLowerCase().includes(search.toLowerCase() ?? "")
-  );
-
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    if (isSelected) {
-      setIsSelected(false);
-    }
-
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      setSearch(e.target.value);
-    }, 1000);
-  }
 
   return (
     <Form
@@ -140,32 +125,15 @@ function AddPlace({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement> }) {
       disabled={!isSelected}
       onSubmit={handleSubmit(onAddPlace)}
     >
-      {/* TODO: search from countries list */}
-      <InputField
+      <InputFieldWithSelect
         id="country"
-        type="text"
+        values={COUNTRIES}
         error={errors.country}
-        {...register("country", { onChange: handleChange })}
+        isSelected={isSelected}
+        setIsSelected={setIsSelected}
+        register={register}
+        setValue={setValue}
       />
-      {search && (
-        <ul>
-          {/* no search: hidden, search: result */}
-          {countries.map((country) => (
-            <li key={country}>
-              <button
-                onClick={() => {
-                  setValue("country", country);
-                  setSearch(country);
-                  setIsSelected(true);
-                }}
-                type="button"
-              >
-                {country}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
       {/* TODO: search from db */}
       <InputField
         id="state-or-region"
@@ -266,4 +234,4 @@ const addPlaceSchema = object({
   { message: "Data must be gradual", path: ["house"] }
 );
 
-type AddPlaceSchema = inferType<typeof addPlaceSchema>;
+export type AddPlaceSchema = inferType<typeof addPlaceSchema>;
