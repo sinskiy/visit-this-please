@@ -14,16 +14,24 @@ export default function AddPlace({
 }: {
   dialogRef: RefObject<HTMLDialogElement>;
 }) {
-  const { mutation, onAddPlace } = useAddPlace(dialogRef);
-
   const {
     register,
+    reset,
     setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
 
+  function localOnSuccess() {
+    reset();
+    setIsCountrySelected(false);
+    setCountrySearch("");
+  }
+
+  const { mutation, onAddPlace } = useAddPlace(dialogRef, localOnSuccess);
+
   const [isCountrySelected, setIsCountrySelected] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
 
   return (
     <Form
@@ -36,6 +44,8 @@ export default function AddPlace({
         id="country"
         values={COUNTRIES}
         error={errors.country}
+        search={countrySearch}
+        setSearch={setCountrySearch}
         isSelected={isCountrySelected}
         setIsSelected={setIsCountrySelected}
         register={register}
@@ -90,7 +100,10 @@ export default function AddPlace({
   );
 }
 
-function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
+function useAddPlace(
+  dialogRef: RefObject<HTMLDialogElement>,
+  onSuccess: () => void
+) {
   const onAddPlace: SubmitHandler<AddPlaceSchema> = (placeObject) => {
     mutation.mutate(placeObject);
   };
@@ -118,6 +131,7 @@ function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
     onSuccess: () => {
       dialogRef.current?.close();
       queryClient.invalidateQueries({ queryKey: ["places"] });
+      onSuccess();
     },
   });
 
