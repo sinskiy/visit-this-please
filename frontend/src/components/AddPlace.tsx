@@ -1,5 +1,11 @@
 import Form from "../ui/Form";
-import { infer as inferType, object, string, enum as zodEnum } from "zod";
+import {
+  boolean,
+  infer as inferType,
+  object,
+  string,
+  enum as zodEnum,
+} from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../ui/InputField";
@@ -60,6 +66,14 @@ export default function AddPlace({
         error={errors.name}
         {...register("name")}
       />
+      <label htmlFor="no-state-region">not in a state/region</label>
+      <input
+        type="checkbox"
+        id="no-state-region"
+        {...register("noStateRegion")}
+      />
+      <label htmlFor="no-settlement">not in a settlement</label>
+      <input type="checkbox" id="no-settlement" {...register("noSettlement")} />
       <InputField
         id="street"
         type="text"
@@ -85,8 +99,23 @@ function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (placeObject: AddPlaceSchema) =>
-      mutateApi("POST", "/places", placeObject, { credentials: "include" }),
+    mutationFn: ({
+      noSettlement,
+      noStateRegion,
+      settlement,
+      stateOrRegion,
+      ...rest
+    }: AddPlaceSchema) =>
+      mutateApi(
+        "POST",
+        "/places",
+        {
+          settlement: noSettlement ? undefined : settlement,
+          stateOrRegion: noStateRegion ? undefined : stateOrRegion,
+          ...rest,
+        },
+        { credentials: "include" }
+      ),
     onSuccess: () => {
       dialogRef.current?.close();
       queryClient.invalidateQueries({ queryKey: ["places"] });
@@ -106,13 +135,30 @@ const addPlaceSchema = object({
 
   street: string().optional(),
   house: string().optional(),
+  noSettlement: boolean(),
+  noStateRegion: boolean(),
 }).refine(
-  ({ stateOrRegion, settlement, street, house, name }) => {
+  ({
+    stateOrRegion,
+    settlement,
+    street,
+    house,
+    name,
+    noSettlement,
+    noStateRegion,
+  }) => {
     let settlementIsFine = true,
       streetIsFine = true,
+      nameIsFine = true,
       houseIsFine = true;
     if (settlement) {
       settlementIsFine = !!stateOrRegion;
+    }
+    if (name) {
+      nameIsFine =
+        (!!settlement && !!stateOrRegion) ||
+        (noSettlement && !!stateOrRegion) ||
+        (noSettlement && noStateRegion);
     }
     if (street) {
       streetIsFine = !!settlement && !!name;
@@ -120,7 +166,7 @@ const addPlaceSchema = object({
     if (house) {
       houseIsFine = !!street && !!name;
     }
-    return settlementIsFine && streetIsFine && houseIsFine;
+    return settlementIsFine && nameIsFine && streetIsFine && houseIsFine;
   },
   { message: "Data must be gradual", path: ["house"] }
 );
