@@ -5,15 +5,22 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutateApi, queryApi } from "../lib/fetch";
 import { getFormattedPlace, Place } from "../lib/places";
 import AddPlace from "../components/AddPlace";
+import { useSearchParams } from "react-router";
 
 export default function Home() {
   const { user } = useContext(UserContext);
 
+  const [params, setParams] = useSearchParams();
+  const sort = params.get("sort");
+
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const { data, isLoading, isError, error } = useQuery<Place[]>({
-    queryKey: ["places", user?.id],
-    queryFn: () => queryApi("/places", { credentials: "include" }),
+    queryKey: ["places", user?.id, sort],
+    queryFn: () =>
+      queryApi(`/places?sort=${sort ?? "positivity"}`, {
+        credentials: "include",
+      }),
   });
 
   const {
@@ -26,11 +33,71 @@ export default function Home() {
   return (
     <>
       <p>hello, {user?.username ?? "world"}</p>
+      <h1>places</h1>
       {user && (
         <button onClick={() => dialogRef.current?.showModal()}>
           add place
         </button>
       )}
+      <div
+        onChange={(e) => {
+          if (e.target instanceof HTMLInputElement) {
+            params.set("sort", e.target.id);
+            setParams(params);
+          }
+        }}
+      >
+        <h2>sort</h2>
+        <input
+          type="radio"
+          name="sort"
+          id="upvotes"
+          defaultChecked={sort === "upvotes"}
+        />
+        <label htmlFor="upvotes">upvotes</label>
+        <input
+          type="radio"
+          name="sort"
+          id="downvotes"
+          defaultChecked={sort === "downvotes"}
+        />
+        <label htmlFor="downvotes">downvotes</label>
+        <input
+          type="radio"
+          name="sort"
+          id="votes"
+          defaultChecked={sort === "votes"}
+        />
+        <label htmlFor="votes">votes</label>
+        <input
+          type="radio"
+          name="sort"
+          id="positivity"
+          defaultChecked={sort === "positivity"}
+        />
+        <label htmlFor="positivity">positivity</label>
+        <input
+          type="radio"
+          name="sort"
+          id="negativity"
+          defaultChecked={sort === "negativity"}
+        />
+        <label htmlFor="negativity">negativity</label>
+        <input
+          type="radio"
+          name="sort"
+          id="last-voted"
+          defaultChecked={sort === "last-voted"}
+        />
+        <label htmlFor="last-voted">last voted</label>
+        <input
+          type="radio"
+          name="sort"
+          id="last-added"
+          defaultChecked={sort === "last-added"}
+        />
+        <label htmlFor="last-added">last added</label>
+      </div>
       {/* TODO: better loading (skeleton) */}
       {isLoading === true ? (
         <p>loading...</p>
