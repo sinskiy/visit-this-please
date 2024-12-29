@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { ErrorWithStatus } from "../lib/error.ts";
-import { object, string } from "zod";
+import { object, string, enum as zodEnum } from "zod";
 import { isUser } from "../auth/controllers.ts";
 import { Place } from "../db/config.ts";
+import { COUNTRIES } from "../lib/const.ts";
 
 const router = Router();
 
 // TODO: "not in a settlement" and "not in a state/region" switch
 // TODO: "rate the street itself" and "rate the house itself" switch
 const addPlaceSchema = object({
-  country: string().min(1).max(50),
+  country: zodEnum(COUNTRIES),
   stateOrRegion: string().optional(),
   settlement: string().optional(),
   name: string().optional(),
