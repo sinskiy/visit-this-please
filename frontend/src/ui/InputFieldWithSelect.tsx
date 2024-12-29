@@ -1,4 +1,4 @@
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo } from "react";
 import InputField from "./InputField";
 import { FieldError, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { AddPlaceSchema } from "../types/addPlaceSchema";
@@ -7,6 +7,8 @@ interface InputFieldWithSelectProps {
   // TODO: dynamic schema
   id: keyof AddPlaceSchema;
   values: readonly string[];
+  search: string;
+  setSearch: (search: string) => void;
   isSelected: boolean;
   setIsSelected: (state: boolean) => void;
   register: UseFormRegister<AddPlaceSchema>;
@@ -18,14 +20,14 @@ let timeout: NodeJS.Timeout;
 export default function InputFieldWithSelect({
   id,
   values,
+  search,
+  setSearch,
   isSelected,
   setIsSelected,
   error,
   setValue,
   register,
 }: InputFieldWithSelectProps) {
-  const [search, setSearch] = useState("");
-
   const result = useMemo(
     () =>
       values.filter((country) =>
