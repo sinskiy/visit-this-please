@@ -45,6 +45,7 @@ export default function SignUp() {
       />
       <InputField
         id="confirm-password"
+        label="confirm password"
         type="password"
         autoComplete="new-password"
         {...register("confirmPassword")}
