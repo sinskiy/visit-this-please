@@ -19,7 +19,11 @@ export default function Provider({ children }: PropsWithChildren) {
         setUser(null);
       }
     }
-  }, [data]);
+
+    if (error) {
+      setUser(null);
+    }
+  }, [data, error]);
 
   return (
     // TODO: loading
