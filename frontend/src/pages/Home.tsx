@@ -11,15 +11,16 @@ export default function Home() {
   const { user } = useContext(UserContext);
 
   const [params, setParams] = useSearchParams();
-  const sort = params.get("sort");
+  const sort = params.get("sort") ?? "positivity";
   const page = Number(params.get("page") ?? 1);
+  const search = params.get("search") ?? "";
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const { data, isLoading, isError, error } = useQuery<Place[]>({
-    queryKey: ["places", user?.id, sort, page],
+    queryKey: ["places", user?.id, sort, page, search],
     queryFn: () =>
-      queryApi(`/places?sort=${sort ?? "positivity"}&page=${page}`, {
+      queryApi(`/places?sort=${sort}&page=${page}&search=${search}`, {
         credentials: "include",
       }),
   });
@@ -31,6 +32,8 @@ export default function Home() {
     mutate,
   } = useVote();
 
+  const searchRef = useRef<HTMLInputElement>(null);
+
   return (
     <>
       <p>hello, {user?.username ?? "world"}</p>
@@ -40,6 +43,16 @@ export default function Home() {
           add place
         </button>
       )}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          params.set("search", searchRef.current?.value ?? "");
+          setParams(params);
+        }}
+      >
+        <input type="search" name="search" id="search" ref={searchRef} />
+        <button type="submit">submit</button>
+      </form>
       <div
         onChange={(e) => {
           if (e.target instanceof HTMLInputElement) {

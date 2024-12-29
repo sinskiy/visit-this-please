@@ -31,6 +31,7 @@ const placeSchema = new Schema({
 
   votes: [voteSchema],
 });
+placeSchema.index({ "$**": "text" });
 export const Place = model("Place", placeSchema);
 
 try {

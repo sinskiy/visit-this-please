@@ -23,12 +23,12 @@ export default function AddPlace({
     formState: { errors },
   } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
 
-  const [isSelected, setIsSelected] = useState(false);
+  const [isCountrySelected, setIsCountrySelected] = useState(false);
 
   return (
     <Form
       mutation={mutation}
-      disabled={!isSelected}
+      disabled={!isCountrySelected}
       onSubmit={handleSubmit(onAddPlace)}
     >
       {/* disable inputs according to switches and empty inputs */}
@@ -36,8 +36,8 @@ export default function AddPlace({
         id="country"
         values={COUNTRIES}
         error={errors.country}
-        isSelected={isSelected}
-        setIsSelected={setIsSelected}
+        isSelected={isCountrySelected}
+        setIsSelected={setIsCountrySelected}
         register={register}
         setValue={setValue}
       />
@@ -85,7 +85,7 @@ export default function AddPlace({
         rate street, house, region or country itself (omit name)
       </label>
       <input type="checkbox" id="omit-name" {...register("omitName")} />
-      {!isSelected && <p>select a country</p>}
+      {!isCountrySelected && <p>select a country</p>}
     </Form>
   );
 }

@@ -32,9 +32,15 @@ const addPlaceSchema = object({
 });
 
 router.get("/", async (req, res) => {
-  const { sort = "positivity", page = 1 } = req.query;
+  const { sort = "positivity", page = 1, search = "" } = req.query;
 
-  const places = await Place.find();
+  if (typeof search !== "string") {
+    throw new ErrorWithStatus("Search type is invalid", 400);
+  }
+
+  const places = search
+    ? await Place.find({ $text: { $search: search } })
+    : await Place.find();
   switch (sort) {
     case "votes":
       places.sort((a, b) => b.votes.length - a.votes.length);
