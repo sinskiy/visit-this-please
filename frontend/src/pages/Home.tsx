@@ -1,14 +1,15 @@
-import { RefObject, useContext, useRef } from "react";
+import { ChangeEvent, RefObject, useContext, useRef, useState } from "react";
 import { UserContext } from "../user";
 import { createPortal } from "react-dom";
 import Form from "../ui/Form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutateApi, queryApi } from "../lib/fetch";
-import { infer as inferType, object, string } from "zod";
+import { infer as inferType, object, string, enum as zodEnum } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../ui/InputField";
 import { getFormattedPlace, Place } from "../lib/places";
+import { COUNTRIES } from "../lib/const";
 
 export default function Home() {
   const { user } = useContext(UserContext);
@@ -105,24 +106,66 @@ function Votes({
   );
 }
 
+let timeout: NodeJS.Timeout;
 function AddPlace({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement> }) {
   const { mutation, onAddPlace } = useAddPlace(dialogRef);
 
   const {
     register,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<AddPlaceSchema>({ resolver: zodResolver(addPlaceSchema) });
 
+  const [search, setSearch] = useState("");
+  const [isSelected, setIsSelected] = useState(false);
+  const countries = COUNTRIES.filter((country) =>
+    country.toLowerCase().includes(search.toLowerCase() ?? "")
+  );
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    if (isSelected) {
+      setIsSelected(false);
+    }
+
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      setSearch(e.target.value);
+    }, 1000);
+  }
+
   return (
-    <Form mutation={mutation} onSubmit={handleSubmit(onAddPlace)}>
+    <Form
+      mutation={mutation}
+      disabled={!isSelected}
+      onSubmit={handleSubmit(onAddPlace)}
+    >
       {/* TODO: search from countries list */}
       <InputField
         id="country"
         type="text"
         error={errors.country}
-        {...register("country")}
+        {...register("country", { onChange: handleChange })}
       />
+      {search && (
+        <ul>
+          {/* no search: hidden, search: result */}
+          {countries.map((country) => (
+            <li key={country}>
+              <button
+                onClick={() => {
+                  setValue("country", country);
+                  setSearch(country);
+                  setIsSelected(true);
+                }}
+                type="button"
+              >
+                {country}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       {/* TODO: search from db */}
       <InputField
         id="state-or-region"
@@ -155,6 +198,7 @@ function AddPlace({ dialogRef }: { dialogRef: RefObject<HTMLDialogElement> }) {
         error={errors.house}
         {...register("house")}
       />
+      {!isSelected && <p>select a country</p>}
     </Form>
   );
 }
@@ -194,7 +238,9 @@ function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
 }
 
 const addPlaceSchema = object({
-  country: string().min(1).max(50),
+  country: zodEnum(COUNTRIES, {
+    errorMap: () => ({ message: "Invalid country" }),
+  }),
   stateOrRegion: string().optional(),
   settlement: string().optional(),
   name: string().optional(),

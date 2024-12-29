@@ -10,7 +10,7 @@ import { ErrorWithStatus } from "./lib/error.ts";
 import { userSession } from "./auth/config.ts";
 import env from "./lib/env.ts";
 import authRouter from "./auth/router.ts";
-import placesRouter from "./places/router.ts";
+import placesRouter from "./places.ts";
 import passport from "passport";
 
 export const app = express();
