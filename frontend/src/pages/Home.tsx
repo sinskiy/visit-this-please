@@ -11,7 +11,7 @@ export default function Home() {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const { data, isError, isLoading, error } = useQuery<Place[]>({
+  const { data, isLoading, error } = useQuery<Place[]>({
     queryKey: ["places", user?.id],
     queryFn: () => queryApi("/places", { credentials: "include" }),
   });
@@ -20,18 +20,16 @@ export default function Home() {
 
   return (
     <>
-      <p>
-        hello, {user?.username ?? "world"}
-        {user && (
-          <button onClick={() => dialogRef.current?.showModal()}>
-            add place
-          </button>
-        )}
-      </p>
-      {/* TODO: better loading (skeleton) and error */}
+      <p>hello, {user?.username ?? "world"}</p>
+      {user && (
+        <button onClick={() => dialogRef.current?.showModal()}>
+          add place
+        </button>
+      )}
+      {/* TODO: better loading (skeleton) */}
       {isLoading === true ? (
         <p>loading...</p>
-      ) : isError === true ? (
+      ) : error ? (
         <p>{error.message}</p>
       ) : data!.length > 0 ? (
         <ul>

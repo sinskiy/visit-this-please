@@ -4,7 +4,7 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { User, UserContext } from "./user";
 
 export default function Provider({ children }: PropsWithChildren) {
-  const { data, isError, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["current-user"],
     queryFn: () => queryApi("/auth", { credentials: "include" }),
   });
@@ -22,8 +22,8 @@ export default function Provider({ children }: PropsWithChildren) {
   }, [data]);
 
   return (
-    // TODO: better handle error and loading
-    <UserContext.Provider value={{ user, setUser, isError, isLoading, error }}>
+    // TODO: loading
+    <UserContext.Provider value={{ user, setUser, isLoading, error }}>
       {children}
     </UserContext.Provider>
   );
