@@ -7,7 +7,6 @@ import { COUNTRIES } from "./lib/const.ts";
 
 const router = Router();
 
-// TODO: "rate the street itself" and "rate the house itself" switch
 const addPlaceSchema = object({
   country: zodEnum(COUNTRIES, { description: "Invalid country" }),
   stateOrRegion: string().optional(),

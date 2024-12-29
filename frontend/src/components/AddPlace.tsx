@@ -1,11 +1,4 @@
 import Form from "../ui/Form";
-import {
-  boolean,
-  infer as inferType,
-  object,
-  string,
-  enum as zodEnum,
-} from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputField from "../ui/InputField";
@@ -14,6 +7,7 @@ import InputFieldWithSelect from "../ui/InputFieldWithSelect";
 import { RefObject, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "../lib/fetch";
+import addPlaceSchema, { AddPlaceSchema } from "../types/addPlaceSchema";
 
 export default function AddPlace({
   dialogRef,
@@ -37,6 +31,7 @@ export default function AddPlace({
       disabled={!isSelected}
       onSubmit={handleSubmit(onAddPlace)}
     >
+      {/* disable inputs according to switches and empty inputs */}
       <InputFieldWithSelect
         id="country"
         values={COUNTRIES}
@@ -86,6 +81,10 @@ export default function AddPlace({
         error={errors.house}
         {...register("house")}
       />
+      <label htmlFor="omit-name">
+        rate street, house, region or country itself (omit name)
+      </label>
+      <input type="checkbox" id="omit-name" {...register("omitName")} />
       {!isSelected && <p>select a country</p>}
     </Form>
   );
@@ -124,51 +123,3 @@ function useAddPlace(dialogRef: RefObject<HTMLDialogElement>) {
 
   return { mutation, onAddPlace };
 }
-
-const addPlaceSchema = object({
-  country: zodEnum(COUNTRIES, {
-    errorMap: () => ({ message: "Invalid country" }),
-  }),
-  stateOrRegion: string().optional(),
-  settlement: string().optional(),
-  name: string().optional(),
-
-  street: string().optional(),
-  house: string().optional(),
-  noSettlement: boolean(),
-  noStateRegion: boolean(),
-}).refine(
-  ({
-    stateOrRegion,
-    settlement,
-    street,
-    house,
-    name,
-    noSettlement,
-    noStateRegion,
-  }) => {
-    let settlementIsFine = true,
-      streetIsFine = true,
-      nameIsFine = true,
-      houseIsFine = true;
-    if (settlement) {
-      settlementIsFine = !!stateOrRegion;
-    }
-    if (name) {
-      nameIsFine =
-        (!!settlement && !!stateOrRegion) ||
-        (noSettlement && !!stateOrRegion) ||
-        (noSettlement && noStateRegion);
-    }
-    if (street) {
-      streetIsFine = !!settlement && !!name;
-    }
-    if (house) {
-      houseIsFine = !!street && !!name;
-    }
-    return settlementIsFine && nameIsFine && streetIsFine && houseIsFine;
-  },
-  { message: "Data must be gradual", path: ["house"] }
-);
-
-export type AddPlaceSchema = inferType<typeof addPlaceSchema>;
