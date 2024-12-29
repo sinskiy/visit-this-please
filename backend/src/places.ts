@@ -38,9 +38,12 @@ router.get("/", async (req, res) => {
     throw new ErrorWithStatus("Search type is invalid", 400);
   }
 
-  const places = search
-    ? await Place.find({ $text: { $search: search } })
-    : await Place.find();
+  console.log(search);
+
+  const places =
+    search.length > 0
+      ? await Place.find({ $text: { $search: search } })
+      : await Place.find();
   switch (sort) {
     case "votes":
       places.sort((a, b) => b.votes.length - a.votes.length);
@@ -97,8 +100,8 @@ router.get("/", async (req, res) => {
   res.json(
     places
       .slice(
-        Number(page) * PAGE_LENGTH,
-        Number(page) * PAGE_LENGTH + PAGE_LENGTH
+        Number(page) * PAGE_LENGTH - PAGE_LENGTH,
+        Number(page) * PAGE_LENGTH
       )
       .map(
         ({
