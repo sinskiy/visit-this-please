@@ -62,7 +62,7 @@ function useLogIn() {
       username: string;
       password: string;
     }) => mutateApi("POST", "/log-in", { username, password }),
-    onSuccess: () =>
+    onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["current-user"] }),
   });
 
