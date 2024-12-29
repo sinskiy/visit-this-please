@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   // @ts-expect-error npm run test works
   test: {
+    globals: true,
     exclude: ["e2e", "node_modules"],
   },
 });
