@@ -114,8 +114,10 @@ function useAddPlace(
     mutationFn: ({
       noSettlement,
       noStateRegion,
+      omitName,
       settlement,
       stateOrRegion,
+      name,
       ...rest
     }: AddPlaceSchema) =>
       mutateApi(
@@ -124,6 +126,7 @@ function useAddPlace(
         {
           settlement: noSettlement ? undefined : settlement,
           stateOrRegion: noStateRegion ? undefined : stateOrRegion,
+          name: omitName ? undefined : name,
           ...rest,
         },
         { credentials: "include" }
