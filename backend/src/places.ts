@@ -15,8 +15,7 @@ const addPlaceSchema = object({
 
   street: string().optional(),
   house: string().optional(),
-  omitName: string(),
-}).refine(({ stateOrRegion, settlement, street, house, name }) => {
+}).refine(({ stateOrRegion, settlement, street, house }) => {
   let settlementIsFine = true,
     streetIsFine = true,
     houseIsFine = true;
@@ -24,10 +23,10 @@ const addPlaceSchema = object({
     settlementIsFine = !!stateOrRegion;
   }
   if (street) {
-    streetIsFine = !!settlement && !!name;
+    streetIsFine = !!settlement;
   }
   if (house) {
-    houseIsFine = !!street && !!name;
+    houseIsFine = !!street;
   }
   return settlementIsFine && streetIsFine && houseIsFine;
 });
