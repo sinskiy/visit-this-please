@@ -32,7 +32,7 @@ const addPlaceSchema = object({
 });
 
 router.get("/", async (req, res) => {
-  const { sort = "positivity" } = req.query;
+  const { sort = "positivity", page = 1 } = req.query;
 
   const places = await Place.find();
   switch (sort) {
@@ -87,50 +87,56 @@ router.get("/", async (req, res) => {
       );
   }
 
+  const PAGE_LENGTH = 5;
   res.json(
-    places.map(
-      ({
-        country,
-        stateOrRegion,
-        settlement,
-        name,
-        street,
-        house,
-        _id,
-        votes,
-      }) => {
-        let voted: "UP" | "DOWN" | undefined;
-        let up = 0;
-        let down = 0;
-
-        for (const { userId, type } of votes) {
-          if (userId.toString() === req.user?.id) {
-            voted = type;
-          }
-
-          switch (type) {
-            case "UP":
-              up++;
-              break;
-            case "DOWN":
-              down++;
-          }
-        }
-
-        return {
-          _id,
+    places
+      .slice(
+        Number(page) * PAGE_LENGTH,
+        Number(page) * PAGE_LENGTH + PAGE_LENGTH
+      )
+      .map(
+        ({
           country,
           stateOrRegion,
           settlement,
           name,
           street,
           house,
-          voted,
-          up,
-          down,
-        };
-      }
-    )
+          _id,
+          votes,
+        }) => {
+          let voted: "UP" | "DOWN" | undefined;
+          let up = 0;
+          let down = 0;
+
+          for (const { userId, type } of votes) {
+            if (userId.toString() === req.user?.id) {
+              voted = type;
+            }
+
+            switch (type) {
+              case "UP":
+                up++;
+                break;
+              case "DOWN":
+                down++;
+            }
+          }
+
+          return {
+            _id,
+            country,
+            stateOrRegion,
+            settlement,
+            name,
+            street,
+            house,
+            voted,
+            up,
+            down,
+          };
+        }
+      )
   );
 });
 

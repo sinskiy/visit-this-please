@@ -12,13 +12,14 @@ export default function Home() {
 
   const [params, setParams] = useSearchParams();
   const sort = params.get("sort");
+  const page = Number(params.get("page") ?? 1);
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const { data, isLoading, isError, error } = useQuery<Place[]>({
-    queryKey: ["places", user?.id, sort],
+    queryKey: ["places", user?.id, sort, page],
     queryFn: () =>
-      queryApi(`/places?sort=${sort ?? "positivity"}`, {
+      queryApi(`/places?sort=${sort ?? "positivity"}&page=${page}`, {
         credentials: "include",
       }),
   });
@@ -43,6 +44,7 @@ export default function Home() {
         onChange={(e) => {
           if (e.target instanceof HTMLInputElement) {
             params.set("sort", e.target.id);
+            params.set("page", "1");
             setParams(params);
           }
         }}
@@ -119,6 +121,24 @@ export default function Home() {
       ) : (
         <p>no places</p>
       )}
+      <button
+        onClick={() => {
+          params.set("page", String(page - 1));
+          setParams(params);
+        }}
+        disabled={page <= 1}
+      >
+        prev
+      </button>
+      {/* TODO: max page */}
+      <button
+        onClick={() => {
+          params.set("page", String(page + 1));
+          setParams(params);
+        }}
+      >
+        next
+      </button>
       {isVoteLoading ? (
         <p>voting...</p>
       ) : (
