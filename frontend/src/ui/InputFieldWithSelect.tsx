@@ -1,9 +1,10 @@
 import { ChangeEvent, useMemo, useState } from "react";
 import InputField from "./InputField";
 import { FieldError, UseFormRegister, UseFormSetValue } from "react-hook-form";
-import { AddPlaceSchema } from "../pages/Home";
+import { AddPlaceSchema } from "../components/AddPlace";
 
 interface InputFieldWithSelectProps {
+  // TODO: dynamic schema
   id: keyof AddPlaceSchema;
   values: readonly string[];
   isSelected: boolean;
