@@ -15,6 +15,7 @@ const addPlaceSchema = object({
 
   street: string().optional(),
   house: string().optional(),
+  omitName: string(),
 }).refine(({ stateOrRegion, settlement, street, house, name }) => {
   let settlementIsFine = true,
     streetIsFine = true,
