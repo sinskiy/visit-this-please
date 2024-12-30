@@ -7,6 +7,15 @@ import { getFormattedPlace, Place } from "../lib/places";
 import AddPlace from "../components/AddPlace";
 import { useSearchParams } from "react-router";
 
+const SORT_OPTIONS = [
+  "upvotes",
+  "downvotes",
+  "votes",
+  "positivity",
+  "negativity",
+  "last-voted",
+  "last-added",
+];
 export default function Home() {
   const { user } = useContext(UserContext);
 
@@ -54,7 +63,7 @@ export default function Home() {
         </button>
       )}
       <Search setSearch={setSearch} />
-      <Sort sort={sort} setSort={setSort} />
+      <Sort types={SORT_OPTIONS} sort={sort} setSort={setSort} />
       {/* TODO: better loading (skeleton) */}
       {isLoading === true ? (
         <p>loading...</p>
@@ -164,9 +173,11 @@ function Search({ setSearch }: { setSearch: (search?: string) => void }) {
 }
 
 function Sort({
+  types,
   sort,
   setSort,
 }: {
+  types: string[];
   sort: string;
   setSort: (type: string) => void;
 }) {
@@ -179,13 +190,11 @@ function Sort({
         setSort(e.currentTarget.value);
       }}
     >
-      <option value="upvotes">upvotes</option>
-      <option value="downvotes">downvotes</option>
-      <option value="votes">votes</option>
-      <option value="positivity">positivity</option>
-      <option value="negativity">negativity</option>
-      <option value="last-added">last added</option>
-      <option value="last-voted">last voted</option>
+      {types.map((type) => (
+        <option key={type} value={type}>
+          {type.replace("-", " ")}
+        </option>
+      ))}
     </select>
   );
 }
