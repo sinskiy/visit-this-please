@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import Layout from "./Layout";
-import NotFound from "./pages/NotFound";
-import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
-import LogIn from "./pages/LogIn";
+import NotFound from "./pages/not-found";
+import SignUp from "./pages/sign-up";
+import Home from "./pages/home";
+import LogIn from "./pages/log-in";
 
 export default function Router() {
   return (
