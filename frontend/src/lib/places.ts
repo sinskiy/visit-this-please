@@ -1,3 +1,5 @@
+export type VoteType = "UP" | "DOWN";
+
 export interface Place {
   _id: string;
   country: string;
@@ -6,9 +8,21 @@ export interface Place {
   name?: string;
   street?: string;
   house?: string;
-  voted?: "UP" | "DOWN";
+  voted?: VoteType;
   up: number;
   down: number;
+}
+
+export interface Vote {
+  _id: string;
+  userId: string;
+  type: VoteType;
+  text?: string;
+}
+
+export interface PlaceById extends Place {
+  userVote?: Vote;
+  votes: Vote[];
 }
 
 export function getFormattedPlace(place: Partial<Place>) {

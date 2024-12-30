@@ -4,6 +4,7 @@ import { object, string, enum as zodEnum } from "zod";
 import { isUser } from "./auth/controllers.ts";
 import { Place } from "./db/config.ts";
 import { COUNTRIES } from "./lib/const.ts";
+import { Types } from "mongoose";
 
 const router = Router();
 
@@ -38,10 +39,8 @@ router.get("/", async (req, res) => {
     throw new ErrorWithStatus("Search type is invalid", 400);
   }
 
-  const places =
-    search.length > 0
-      ? await Place.find({ $text: { $search: search } })
-      : await Place.find();
+  const filter = search.length > 0 ? { $text: { $search: search } } : {};
+  const places = await Place.find(filter, { votes: { text: 0 } });
   switch (sort) {
     case "votes":
       places.sort((a, b) => b.votes.length - a.votes.length);
@@ -131,7 +130,7 @@ router.get("/:id", async (req, res) => {
     throw new ErrorWithStatus("Place not found", 404);
   }
 
-  res.json(getPlaceWithVotes(place, req.user?.id));
+  res.json(getPlaceWithVotes(place, req.user?.id, true));
 });
 
 router.patch("/:id/votes", isUser, async (req, res) => {
@@ -164,6 +163,26 @@ router.patch("/:id/votes", isUser, async (req, res) => {
   res.json({ status: "success" });
 });
 
+router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
+  if (!req.body.text) {
+    throw new ErrorWithStatus("No text", 400);
+  }
+
+  const { id, voteId } = req.params;
+
+  // const place = await Place.findOneAndUpdate(
+  //   { _id: id, "votes.id": voteId },
+  //   { $set: { "votes.$.text": req.body.text } }
+  // );
+  const place = await Place.findById(id);
+  const vote = place && place.votes.id(voteId);
+  if (vote) {
+    vote.text = req.body.text;
+    await place.save();
+  }
+  res.json({ status: "success" });
+});
+
 export default router;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -172,21 +191,24 @@ async function getPlace() {
 }
 
 function getPlaceWithVotes(
-  place: /* inferType<typeof addPlaceSchema> & { _id: string, votes: { type: "UP" | "DOWN", userId: string }[] } */ Awaited<
-    ReturnType<typeof getPlace>
-  >,
-  reqUserId?: string
+  place: Awaited<ReturnType<typeof getPlace>>,
+  reqUserId?: string,
+  extended: boolean = false
 ) {
-  let voted: "UP" | "DOWN" | undefined;
+  let voted: VoteType | undefined;
+  let userVote: Vote | undefined;
   let up = 0;
   let down = 0;
 
-  for (const { userId, type } of place!.votes) {
-    if (userId.toString() === reqUserId) {
-      voted = type;
+  for (const vote of place!.votes) {
+    if (vote.userId.toString() === reqUserId) {
+      voted = vote.type;
+      if (extended === true) {
+        userVote = vote;
+      }
     }
 
-    switch (type) {
+    switch (vote.type) {
       case "UP":
         up++;
         break;
@@ -195,8 +217,16 @@ function getPlaceWithVotes(
     }
   }
 
-  const { _id, country, stateOrRegion, settlement, name, street, house } =
-    place!;
+  const {
+    _id,
+    country,
+    stateOrRegion,
+    settlement,
+    name,
+    street,
+    house,
+    votes,
+  } = place!;
 
   return {
     _id,
@@ -209,5 +239,16 @@ function getPlaceWithVotes(
     voted,
     up,
     down,
+    userVote: extended ? userVote : undefined,
+    votes: extended ? votes : undefined,
   };
+}
+
+type VoteType = "UP" | "DOWN";
+
+interface Vote {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  type: VoteType;
+  text?: string;
 }
