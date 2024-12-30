@@ -12,10 +12,11 @@ export default function Provider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<null | User>(null);
 
   useEffect(() => {
+    console.log();
     if (data) {
-      if ("user" in data && !user) {
-        setUser(data.user);
-      } else if (!("user" in data) && user) {
+      if (!("error" in data) && !user) {
+        setUser(data);
+      } else if ("error" in data && user) {
         setUser(null);
       }
     }
