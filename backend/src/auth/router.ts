@@ -81,4 +81,10 @@ router.get("/auth", (req, res) => {
   res.json(req.user);
 });
 
+router.get("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  res.json({ username: user?.username });
+});
+
 export default router;

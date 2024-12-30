@@ -1,10 +1,10 @@
 import { getFormattedPlace, PlaceById, Vote, type Place } from "../lib/places";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../user";
 import { useVote } from "../lib/votes";
 import Form from "../ui/Form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi } from "../lib/fetch";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { mutateApi, queryApi } from "../lib/fetch";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { infer as inferType, object, string } from "zod";
@@ -101,7 +101,6 @@ function useComment(id: string, voteId?: string) {
 const commentScheme = object({ text: string().min(1) });
 type CommentScheme = inferType<typeof commentScheme>;
 
-// TODO: better type
 function Comments({ comments }: { comments: Vote[] }) {
   console.log(comments);
   return (
@@ -110,10 +109,39 @@ function Comments({ comments }: { comments: Vote[] }) {
         (comment) =>
           comment.text && (
             <li key={comment.userId}>
-              {comment.text} by {comment.userId}
+              <Comment comment={comment} />
             </li>
           )
       )}
     </ul>
+  );
+}
+
+function Comment({ comment }: { comment: Vote }) {
+  const { user } = useContext(UserContext);
+  const [doFetchUsername, setDoFetchUsername] = useState(false);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["users", comment.userId],
+    queryFn: () => queryApi(`/users/${comment.userId}`),
+    staleTime: 1000 * 60 * 60 * 24,
+    enabled: doFetchUsername,
+  });
+
+  const isByMe = user?.id === comment.userId;
+
+  return (
+    <>
+      {comment.text} by{" "}
+      {isByMe ? user?.username : data?.username ?? comment.userId}
+      {!isByMe && (
+        <button
+          onClick={() => setDoFetchUsername(true)}
+          disabled={data && "username" in data}
+        >
+          fetch username
+        </button>
+      )}
+      {isLoading ? <p>loading username</p> : isError && <p>{error.message}</p>}
+    </>
   );
 }
