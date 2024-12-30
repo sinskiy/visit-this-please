@@ -51,7 +51,7 @@ router.post("/sign-up", async (req, res) => {
     if (err) {
       throw new Error();
     }
-    res.json({ user: parsedUser.data });
+    res.json(parsedUser.data);
   });
 });
 
@@ -78,7 +78,7 @@ router.get("/auth", (req, res) => {
     throw new ErrorWithStatus("Unauthorized", 401);
   }
 
-  res.json({ user: req.user });
+  res.json(req.user);
 });
 
 export default router;
