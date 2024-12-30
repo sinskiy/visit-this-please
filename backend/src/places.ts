@@ -38,8 +38,6 @@ router.get("/", async (req, res) => {
     throw new ErrorWithStatus("Search type is invalid", 400);
   }
 
-  console.log(search);
-
   const places =
     search.length > 0
       ? await Place.find({ $text: { $search: search } })
@@ -103,49 +101,7 @@ router.get("/", async (req, res) => {
         Number(page) * PAGE_LENGTH - PAGE_LENGTH,
         Number(page) * PAGE_LENGTH
       )
-      .map(
-        ({
-          country,
-          stateOrRegion,
-          settlement,
-          name,
-          street,
-          house,
-          _id,
-          votes,
-        }) => {
-          let voted: "UP" | "DOWN" | undefined;
-          let up = 0;
-          let down = 0;
-
-          for (const { userId, type } of votes) {
-            if (userId.toString() === req.user?.id) {
-              voted = type;
-            }
-
-            switch (type) {
-              case "UP":
-                up++;
-                break;
-              case "DOWN":
-                down++;
-            }
-          }
-
-          return {
-            _id,
-            country,
-            stateOrRegion,
-            settlement,
-            name,
-            street,
-            house,
-            voted,
-            up,
-            down,
-          };
-        }
-      )
+      .map((place) => getPlaceWithVotes(place, req.user?.id))
   );
 });
 
@@ -165,6 +121,17 @@ router.post("/", isUser, async (req, res) => {
   }
 
   res.json({ status: "success" });
+});
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const place = await Place.findById(id);
+  if (!place) {
+    throw new ErrorWithStatus("Place not found", 404);
+  }
+
+  res.json(getPlaceWithVotes(place, req.user?.id));
 });
 
 router.patch("/:id/votes", isUser, async (req, res) => {
@@ -198,3 +165,49 @@ router.patch("/:id/votes", isUser, async (req, res) => {
 });
 
 export default router;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function getPlace() {
+  return await Place.findOne();
+}
+
+function getPlaceWithVotes(
+  place: /* inferType<typeof addPlaceSchema> & { _id: string, votes: { type: "UP" | "DOWN", userId: string }[] } */ Awaited<
+    ReturnType<typeof getPlace>
+  >,
+  reqUserId?: string
+) {
+  let voted: "UP" | "DOWN" | undefined;
+  let up = 0;
+  let down = 0;
+
+  for (const { userId, type } of place!.votes) {
+    if (userId.toString() === reqUserId) {
+      voted = type;
+    }
+
+    switch (type) {
+      case "UP":
+        up++;
+        break;
+      case "DOWN":
+        down++;
+    }
+  }
+
+  const { _id, country, stateOrRegion, settlement, name, street, house } =
+    place!;
+
+  return {
+    _id,
+    country,
+    stateOrRegion,
+    settlement,
+    name,
+    street,
+    house,
+    voted,
+    up,
+    down,
+  };
+}
