@@ -22,7 +22,18 @@ export default function Place({
       <p>{getFormattedPlace(place)}</p>
       <Votes place={place} />
       {user && comments && <CommentForm place={place} />}
-      {comments && <Comments comments={place.votes} />}
+      {comments && (
+        <ul>
+          {place.votes.map(
+            (comment) =>
+              comment.text && (
+                <li key={comment.userId}>
+                  <Comment id={place._id} comment={comment} />
+                </li>
+              )
+          )}
+        </ul>
+      )}
     </>
   );
 }
@@ -63,7 +74,11 @@ function CommentForm({ place }: { place: PlaceById }) {
   });
 
   return (
-    <Form mutation={mutation} onSubmit={handleSubmit(onSubmit)}>
+    <Form
+      mutation={mutation}
+      onSubmit={handleSubmit(onSubmit)}
+      disabled={!place.userVote}
+    >
       <textarea
         id="comment"
         cols={30}
@@ -101,30 +116,28 @@ function useComment(id: string, voteId?: string) {
 const commentScheme = object({ text: string().min(1) });
 type CommentScheme = inferType<typeof commentScheme>;
 
-function Comments({ comments }: { comments: Vote[] }) {
-  console.log(comments);
-  return (
-    <ul>
-      {comments.map(
-        (comment) =>
-          comment.text && (
-            <li key={comment.userId}>
-              <Comment comment={comment} />
-            </li>
-          )
-      )}
-    </ul>
-  );
-}
-
-function Comment({ comment }: { comment: Vote }) {
+function Comment({ id, comment }: { id: string; comment: Vote }) {
+  const queryClient = useQueryClient();
   const { user } = useContext(UserContext);
+
   const [doFetchUsername, setDoFetchUsername] = useState(false);
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["users", comment.userId],
     queryFn: () => queryApi(`/users/${comment.userId}`),
     staleTime: 1000 * 60 * 60 * 24,
     enabled: doFetchUsername,
+  });
+
+  const {
+    isPending: isDeleting,
+    isError: isDeleteError,
+    error: deleteError,
+    mutate,
+  } = useMutation({
+    mutationFn: () =>
+      mutateApi("PATCH", `/places/${id}/votes/${comment._id}`, { text: "" }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["places", id] }),
   });
 
   const isByMe = user?.id === comment.userId;
@@ -141,6 +154,12 @@ function Comment({ comment }: { comment: Vote }) {
           fetch username
         </button>
       )}
+      {isByMe && (
+        <button disabled={isDeleting} onClick={() => mutate()}>
+          delete
+        </button>
+      )}
+      {isDeleteError && <p>{deleteError.message}</p>}
       {isLoading ? <p>loading username</p> : isError && <p>{error.message}</p>}
     </>
   );
