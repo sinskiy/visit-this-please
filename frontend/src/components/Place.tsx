@@ -84,6 +84,7 @@ function CommentForm({ place }: { place: PlaceById }) {
         cols={30}
         rows={5}
         {...register("text")}
+        defaultValue={place.userVote?.text}
       ></textarea>
     </Form>
   );
