@@ -53,66 +53,24 @@ export default function Home() {
         <input type="search" name="search" id="search" ref={searchRef} />
         <button type="submit">submit</button>
       </form>
-      <div
+      <select
+        name="sort"
+        id="sort"
+        defaultValue={sort}
         onChange={(e) => {
-          if (e.target instanceof HTMLInputElement) {
-            params.set("sort", e.target.id);
-            params.set("page", "1");
-            setParams(params);
-          }
+          params.set("sort", e.currentTarget.value);
+          params.set("page", "1");
+          setParams(params);
         }}
       >
-        <h2>sort</h2>
-        <input
-          type="radio"
-          name="sort"
-          id="upvotes"
-          defaultChecked={sort === "upvotes"}
-        />
-        <label htmlFor="upvotes">upvotes</label>
-        <input
-          type="radio"
-          name="sort"
-          id="downvotes"
-          defaultChecked={sort === "downvotes"}
-        />
-        <label htmlFor="downvotes">downvotes</label>
-        <input
-          type="radio"
-          name="sort"
-          id="votes"
-          defaultChecked={sort === "votes"}
-        />
-        <label htmlFor="votes">votes</label>
-        <input
-          type="radio"
-          name="sort"
-          id="positivity"
-          defaultChecked={sort === "positivity"}
-        />
-        <label htmlFor="positivity">positivity</label>
-        <input
-          type="radio"
-          name="sort"
-          id="negativity"
-          defaultChecked={sort === "negativity"}
-        />
-        <label htmlFor="negativity">negativity</label>
-        <input
-          type="radio"
-          name="sort"
-          id="last-voted"
-          defaultChecked={sort === "last-voted"}
-        />
-        <label htmlFor="last-voted">last voted</label>
-        <input
-          type="radio"
-          name="sort"
-          id="last-added"
-          defaultChecked={sort === "last-added"}
-        />
-        <label htmlFor="last-added">last added</label>
-      </div>
+        <option value="upvotes">upvotes</option>
+        <option value="downvotes">downvotes</option>
+        <option value="votes">votes</option>
+        <option value="positivity">positivity</option>
+        <option value="negativity">negativity</option>
+        <option value="last-added">last added</option>
+        <option value="last-voted">last voted</option>
+      </select>
       {/* TODO: better loading (skeleton) */}
       {isLoading === true ? (
         <p>loading...</p>
