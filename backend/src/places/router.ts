@@ -139,7 +139,7 @@ router.patch("/:id/votes", isUser, async (req, res) => {
 });
 
 router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
-  if (!req.body.text) {
+  if (typeof req.body.text !== "string") {
     throw new ErrorWithStatus("No text", 400);
   }
 

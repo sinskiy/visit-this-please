@@ -32,5 +32,5 @@ export interface Vote {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   type: VoteType;
-  text?: string;
+  text?: string | null;
 }
