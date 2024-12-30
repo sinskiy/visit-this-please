@@ -4,27 +4,11 @@ import { PropsWithChildren, useEffect, useState } from "react";
 import { User, UserContext } from "./user";
 
 export default function Provider({ children }: PropsWithChildren) {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["current-user"],
-    queryFn: () => queryApi("/auth", { credentials: "include" }),
-  });
-
-  const [user, setUser] = useState<null | User>(null);
-
-  useEffect(() => {
-    console.log();
-    if (data) {
-      if (!("error" in data) && !user) {
-        setUser(data);
-      } else if ("error" in data && user) {
-        setUser(null);
-      }
-    }
-
-    if (error) {
-      setUser(null);
-    }
-  }, [data, error]);
+  const {
+    user,
+    setUser,
+    query: { isLoading, isError, error },
+  } = useUser();
 
   return (
     // TODO: loading
@@ -32,4 +16,29 @@ export default function Provider({ children }: PropsWithChildren) {
       {children}
     </UserContext.Provider>
   );
+}
+
+function useUser() {
+  const query = useQuery({
+    queryKey: ["current-user"],
+    queryFn: () => queryApi("/auth", { credentials: "include" }),
+  });
+
+  const [user, setUser] = useState<null | User>(null);
+
+  useEffect(() => {
+    if (query.data) {
+      if (!("error" in query.data) && !user) {
+        setUser(query.data);
+      } else if ("error" in query.data && user) {
+        setUser(null);
+      }
+    }
+
+    if (query.error) {
+      setUser(null);
+    }
+  }, [query.data, query.error]);
+
+  return { user, setUser, query };
 }
