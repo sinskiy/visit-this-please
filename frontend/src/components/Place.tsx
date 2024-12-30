@@ -1,5 +1,5 @@
 import { getFormattedPlace, PlaceById, Vote, type Place } from "../lib/places";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../user";
 import { useVote } from "../lib/votes";
 import Form from "../ui/Form";
@@ -13,7 +13,7 @@ export default function Place({
   place,
   comments = false,
 }: {
-  place: PlaceById;
+  place: Place | PlaceById;
   comments?: boolean;
 }) {
   const { user } = useContext(UserContext);
@@ -21,8 +21,8 @@ export default function Place({
     <>
       <p>{getFormattedPlace(place)}</p>
       <Votes place={place} />
-      {user && comments && <CommentForm place={place} />}
-      {comments && (
+      {"votes" in place && user && comments && <CommentForm place={place} />}
+      {"votes" in place && comments && (
         <ul>
           {place.votes.map(
             (comment) =>
@@ -69,9 +69,15 @@ function Votes({ place }: { place: Place }) {
 function CommentForm({ place }: { place: PlaceById }) {
   const { mutation, onSubmit } = useComment(place._id, place.userVote?._id);
 
-  const { register, handleSubmit } = useForm<CommentScheme>({
+  const { register, handleSubmit, reset } = useForm<CommentScheme>({
     resolver: zodResolver(commentScheme),
   });
+
+  useEffect(() => {
+    if (!place.userVote?.text) {
+      reset();
+    }
+  }, [place.userVote?.text]);
 
   return (
     <Form
@@ -107,8 +113,12 @@ function useComment(id: string, voteId?: string) {
       voteId: string | undefined;
       text: string;
     }) => mutateApi("PATCH", `/places/${id}/votes/${voteId}`, { text }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["places", id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["places", id] });
+      queryClient.invalidateQueries({
+        queryKey: ["places", { sort: "comments" }],
+      });
+    },
   });
 
   return { mutation, onSubmit };
@@ -137,8 +147,12 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
   } = useMutation({
     mutationFn: () =>
       mutateApi("PATCH", `/places/${id}/votes/${comment._id}`, { text: "" }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["places", id] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["places", id] });
+      queryClient.invalidateQueries({
+        queryKey: ["places", { sort: "comments" }],
+      });
+    },
   });
 
   const isByMe = user?.id === comment.userId;

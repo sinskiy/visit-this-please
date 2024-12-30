@@ -17,6 +17,7 @@ const SORT_OPTIONS = [
   "negativity",
   "last-voted",
   "last-added",
+  "comments",
 ];
 export default function Home() {
   const { user } = useContext(UserContext);
@@ -177,7 +178,7 @@ function usePlaces({
   search: string;
 }) {
   const query = useQuery<PlaceI[]>({
-    queryKey: ["places", sort, page, search],
+    queryKey: ["places", { sort, page, search }],
     queryFn: () =>
       queryApi(`/places?sort=${sort}&page=${page}&search=${search}`, {
         credentials: "include",
