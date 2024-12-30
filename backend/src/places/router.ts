@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
   }
 
   const filter = search.length > 0 ? { $text: { $search: search } } : {};
-  const places = await Place.find(filter, { votes: { text: 0 } });
+  const places = await Place.find(filter);
   switch (sort) {
     case "votes":
       places.sort((a, b) => b.votes.length - a.votes.length);
@@ -65,6 +65,13 @@ router.get("/", async (req, res) => {
       places.sort(
         (a, b) =>
           b._id.getTimestamp().getTime() - a._id.getTimestamp().getTime()
+      );
+      break;
+    case "comments":
+      places.sort(
+        (a, b) =>
+          b.votes.filter((vote) => typeof vote.text === "string").length -
+          a.votes.filter((vote) => typeof vote.text === "string").length
       );
   }
 
@@ -148,7 +155,7 @@ router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
   const place = await Place.findById(id);
   const vote = place && place.votes.id(voteId);
   if (vote) {
-    vote.text = req.body.text;
+    vote.text = req.body.text || null;
     await place.save();
   }
   res.json({ status: "success" });
