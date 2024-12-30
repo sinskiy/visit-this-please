@@ -1,36 +1,11 @@
 import { Router } from "express";
-import { ErrorWithStatus } from "./lib/error.ts";
-import { object, string, enum as zodEnum } from "zod";
-import { isUser } from "./auth/controllers.ts";
-import { Place } from "./db/config.ts";
-import { COUNTRIES } from "./lib/const.ts";
-import { Types } from "mongoose";
+import { ErrorWithStatus } from "../lib/error.ts";
+import { Place } from "../db/config.ts";
+import { getPlaceWithVotes } from "./controllers.ts";
+import { isUser } from "../auth/controllers.ts";
+import { addPlaceSchema } from "./types.ts";
 
 const router = Router();
-
-const addPlaceSchema = object({
-  country: zodEnum(COUNTRIES, { description: "Invalid country" }),
-  stateOrRegion: string().optional(),
-  settlement: string().optional(),
-  name: string().optional(),
-
-  street: string().optional(),
-  house: string().optional(),
-}).refine(({ stateOrRegion, settlement, street, house }) => {
-  let settlementIsFine = true,
-    streetIsFine = true,
-    houseIsFine = true;
-  if (settlement) {
-    settlementIsFine = !!stateOrRegion;
-  }
-  if (street) {
-    streetIsFine = !!settlement;
-  }
-  if (house) {
-    houseIsFine = !!street;
-  }
-  return settlementIsFine && streetIsFine && houseIsFine;
-});
 
 router.get("/", async (req, res) => {
   const { sort = "positivity", page = 1, search = "" } = req.query;
@@ -170,10 +145,6 @@ router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
 
   const { id, voteId } = req.params;
 
-  // const place = await Place.findOneAndUpdate(
-  //   { _id: id, "votes.id": voteId },
-  //   { $set: { "votes.$.text": req.body.text } }
-  // );
   const place = await Place.findById(id);
   const vote = place && place.votes.id(voteId);
   if (vote) {
@@ -184,71 +155,3 @@ router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
 });
 
 export default router;
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function getPlace() {
-  return await Place.findOne();
-}
-
-function getPlaceWithVotes(
-  place: Awaited<ReturnType<typeof getPlace>>,
-  reqUserId?: string,
-  extended: boolean = false
-) {
-  let voted: VoteType | undefined;
-  let userVote: Vote | undefined;
-  let up = 0;
-  let down = 0;
-
-  for (const vote of place!.votes) {
-    if (vote.userId.toString() === reqUserId) {
-      voted = vote.type;
-      if (extended === true) {
-        userVote = vote;
-      }
-    }
-
-    switch (vote.type) {
-      case "UP":
-        up++;
-        break;
-      case "DOWN":
-        down++;
-    }
-  }
-
-  const {
-    _id,
-    country,
-    stateOrRegion,
-    settlement,
-    name,
-    street,
-    house,
-    votes,
-  } = place!;
-
-  return {
-    _id,
-    country,
-    stateOrRegion,
-    settlement,
-    name,
-    street,
-    house,
-    voted,
-    up,
-    down,
-    userVote: extended ? userVote : undefined,
-    votes: extended ? votes : undefined,
-  };
-}
-
-type VoteType = "UP" | "DOWN";
-
-interface Vote {
-  _id: Types.ObjectId;
-  userId: Types.ObjectId;
-  type: VoteType;
-  text?: string;
-}
