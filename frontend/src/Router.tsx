@@ -4,6 +4,7 @@ import NotFound from "./pages/not-found";
 import SignUp from "./pages/sign-up";
 import Home from "./pages/home";
 import LogIn from "./pages/log-in";
+import Place from "./pages/place-page";
 
 export default function Router() {
   return (
@@ -13,6 +14,7 @@ export default function Router() {
           <Route index element={<Home />} />
           <Route path="/log-in" element={<LogIn />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/:id" element={<Place />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
