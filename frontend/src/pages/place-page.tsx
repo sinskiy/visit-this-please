@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import Place from "../components/Place";
 import { queryApi } from "../lib/fetch";
 import { useParams } from "react-router";
-import { Place as PlaceI } from "../lib/places";
+import { PlaceById } from "../lib/places";
 
 export default function PlacePage() {
   // ? add readable id
@@ -15,12 +15,12 @@ export default function PlacePage() {
   } else if (isError) {
     return <p>{error.message}</p>;
   } else {
-    return <Place place={data!} />;
+    return <Place place={data!} comments />;
   }
 }
 
 function usePlace(id: string) {
-  const query = useQuery<PlaceI>({
+  const query = useQuery<PlaceById>({
     queryKey: ["places", id],
     queryFn: () =>
       queryApi(`/places/${id}`, {
