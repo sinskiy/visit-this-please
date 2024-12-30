@@ -18,7 +18,7 @@ export default function Home() {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const { data, isLoading, isError, error } = useQuery<Place[]>({
-    queryKey: ["places", user?.id, sort, page, search],
+    queryKey: ["places", sort, page, search],
     queryFn: () =>
       queryApi(`/places?sort=${sort}&page=${page}&search=${search}`, {
         credentials: "include",
