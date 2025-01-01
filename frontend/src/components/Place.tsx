@@ -128,23 +128,78 @@ const commentScheme = object({ text: string().min(1) });
 type CommentScheme = inferType<typeof commentScheme>;
 
 function Comment({ id, comment }: { id: string; comment: Vote }) {
-  const queryClient = useQueryClient();
   const { user } = useContext(UserContext);
+  const isMyComment = user?.id === comment.userId;
 
+  const { fetchUsernameQuery, setDoFetchUsername } = useFetchUsername(comment);
+
+  const deleteCommentMutation = useDeleteComment(id, comment);
+
+  const { likeMutation, isLiked } = useLike(id, comment);
+
+  return (
+    <>
+      {comment.text} by{" "}
+      {isMyComment
+        ? user?.username
+        : fetchUsernameQuery.data?.username ?? comment.userId}
+      {!isMyComment && (
+        <button
+          onClick={() => setDoFetchUsername(true)}
+          disabled={
+            fetchUsernameQuery.data && "username" in fetchUsernameQuery.data
+          }
+        >
+          fetch username
+        </button>
+      )}
+      <p>
+        {comment.likes.length} like{comment.likes.length !== 1 && "s"}
+      </p>
+      {user && (
+        <button
+          disabled={likeMutation.isPending}
+          onClick={() => likeMutation.mutate()}
+        >
+          {isLiked ? "remove" : "add"} like
+        </button>
+      )}
+      {isMyComment && (
+        <button
+          disabled={deleteCommentMutation.isPending}
+          onClick={() => deleteCommentMutation.mutate()}
+        >
+          delete
+        </button>
+      )}
+      {deleteCommentMutation.isError && (
+        <p>{deleteCommentMutation.error.message}</p>
+      )}
+      {likeMutation.isError && <p>{likeMutation.error.message}</p>}
+      {fetchUsernameQuery.isLoading ? (
+        <p>loading username</p>
+      ) : (
+        fetchUsernameQuery.isError && <p>{fetchUsernameQuery.error.message}</p>
+      )}
+    </>
+  );
+}
+
+function useFetchUsername(comment: Vote) {
   const [doFetchUsername, setDoFetchUsername] = useState(false);
-  const { data, isLoading, isError, error } = useQuery({
+  const fetchUsernameQuery = useQuery({
     queryKey: ["users", comment.userId],
     queryFn: () => queryApi(`/users/${comment.userId}`),
     staleTime: 1000 * 60 * 60 * 24,
     enabled: doFetchUsername,
   });
+  return { fetchUsernameQuery, setDoFetchUsername };
+}
 
-  const {
-    isPending: isDeleting,
-    isError: isDeleteError,
-    error: deleteError,
-    mutate,
-  } = useMutation({
+function useDeleteComment(id: string, comment: Vote) {
+  const queryClient = useQueryClient();
+
+  const deleteCommentMutation = useMutation({
     mutationFn: () =>
       mutateApi("PATCH", `/places/${id}/votes/${comment._id}`, { text: "" }),
     onSuccess: () => {
@@ -154,13 +209,15 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
       });
     },
   });
+  return deleteCommentMutation;
+}
 
-  const {
-    isPending: isLiking,
-    isError: isLikeError,
-    error: likeError,
-    mutate: like,
-  } = useMutation({
+function useLike(id: string, comment: Vote) {
+  const { user } = useContext(UserContext);
+
+  const queryClient = useQueryClient();
+
+  const likeMutation = useMutation({
     mutationFn: () =>
       mutateApi("PATCH", `/places/${id}/votes/${comment._id}/likes`),
     onSuccess: () =>
@@ -172,36 +229,5 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
     [comment]
   );
 
-  const isByMe = user?.id === comment.userId;
-
-  return (
-    <>
-      {comment.text} by{" "}
-      {isByMe ? user?.username : data?.username ?? comment.userId}
-      {!isByMe && (
-        <button
-          onClick={() => setDoFetchUsername(true)}
-          disabled={data && "username" in data}
-        >
-          fetch username
-        </button>
-      )}
-      <p>
-        {comment.likes.length} like{comment.likes.length !== 1 && "s"}
-      </p>
-      {user && (
-        <button disabled={isLiking} onClick={() => like()}>
-          {isLiked ? "remove" : "add"} like
-        </button>
-      )}
-      {isByMe && (
-        <button disabled={isDeleting} onClick={() => mutate()}>
-          delete
-        </button>
-      )}
-      {isDeleteError && <p>{deleteError.message}</p>}
-      {isLikeError && <p>{likeError.message}</p>}
-      {isLoading ? <p>loading username</p> : isError && <p>{error.message}</p>}
-    </>
-  );
+  return { likeMutation, isLiked };
 }
