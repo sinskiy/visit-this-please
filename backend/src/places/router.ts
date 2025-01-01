@@ -112,6 +112,25 @@ router.get("/:id", async (req, res) => {
     throw new ErrorWithStatus("Place not found", 404);
   }
 
+  const { sort = "last-added" } = req.query;
+
+  switch (sort) {
+    case "likes":
+      place.votes.sort((a, b) => b.likes.length - a.likes.length);
+      break;
+    case "last-added":
+      place.votes.sort(
+        (a, b) =>
+          b._id.getTimestamp().getTime() - a._id.getTimestamp().getTime()
+      );
+      break;
+    case "upvotes-first":
+      place.votes.sort((a) => (a.type === "UP" ? -1 : 1));
+      break;
+    case "downvotes-first":
+      place.votes.sort((a) => (a.type === "UP" ? 1 : -1));
+  }
+
   res.json(getPlaceWithVotes(place, req.user?.id, true));
 });
 
