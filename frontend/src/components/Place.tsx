@@ -12,7 +12,12 @@ import Sort from "./Sort";
 import { useSearchParams } from "react-router";
 import { usePlaceSort } from "../lib/sort";
 
-const SORT_OPTIONS = ["likes", "last-added", "upvote-first", "downvote-first"];
+const SORT_OPTIONS = [
+  "likes",
+  "last-added",
+  "upvotes-first",
+  "downvotes-first",
+];
 export default function Place({
   place,
   comments = false,
