@@ -161,4 +161,26 @@ router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
   res.json({ status: "success" });
 });
 
+router.patch("/:id/votes/:voteId/likes", isUser, async (req, res) => {
+  const { id, voteId } = req.params;
+
+  const place = await Place.findById(id);
+
+  const vote = place && place.votes.id(voteId);
+  if (!vote) {
+    throw new Error();
+  }
+  const like = vote.likes.find(
+    (like) => like.userId.toString() === req.user!.id
+  );
+  if (like) {
+    like.deleteOne();
+  } else {
+    vote.likes.push({ userId: req.user!.id });
+  }
+  await place.save();
+
+  res.json({ status: "success" });
+});
+
 export default router;
