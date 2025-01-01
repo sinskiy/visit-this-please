@@ -8,6 +8,10 @@ const userSchema = new Schema({
 });
 export const User = model("User", userSchema);
 
+const likeSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+});
+
 const voteSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 
@@ -17,6 +21,8 @@ const voteSchema = new Schema({
     enum: ["UP", "DOWN"],
     required: true,
   },
+
+  likes: [likeSchema],
 });
 
 const placeSchema = new Schema({
