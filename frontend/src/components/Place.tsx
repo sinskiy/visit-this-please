@@ -8,7 +8,10 @@ import { mutateApi, queryApi } from "../lib/fetch";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { infer as inferType, object, string } from "zod";
+import Sort from "./Sort";
+import { useSearchParams } from "react-router";
 
+const SORT_OPTIONS = ["likes", "last-added", "upvote-first", "downvote-first"];
 export default function Place({
   place,
   comments = false,
@@ -17,22 +20,33 @@ export default function Place({
   comments?: boolean;
 }) {
   const { user } = useContext(UserContext);
+
+  const [params, setParams] = useSearchParams();
+  const sort = params.get("sort") ?? "last-added";
+  function setSort(type: string) {
+    params.set("sort", type);
+    setParams(params);
+  }
+
   return (
     <>
       <p>{getFormattedPlace(place)}</p>
       <Votes place={place} />
       {"votes" in place && user && comments && <CommentForm place={place} />}
       {"votes" in place && comments && (
-        <ul>
-          {place.votes.map(
-            (comment) =>
-              comment.text && (
-                <li key={comment.userId}>
-                  <Comment id={place._id} comment={comment} />
-                </li>
-              )
-          )}
-        </ul>
+        <>
+          <Sort types={SORT_OPTIONS} sort={sort} setSort={setSort} />
+          <ul>
+            {place.votes.map(
+              (comment) =>
+                comment.text && (
+                  <li key={comment.userId}>
+                    <Comment id={place._id} comment={comment} />
+                  </li>
+                )
+            )}
+          </ul>
+        </>
       )}
     </>
   );

@@ -8,6 +8,7 @@ import AddPlace from "../components/AddPlace";
 import { Link, useSearchParams } from "react-router";
 import { useVote } from "../lib/votes";
 import Place from "../components/Place";
+import Sort from "../components/Sort";
 
 const SORT_OPTIONS = [
   "upvotes",
@@ -118,33 +119,6 @@ function Search({ setSearch }: { setSearch: (search?: string) => void }) {
       <input type="search" name="search" id="search" ref={searchRef} />
       <button type="submit">submit</button>
     </form>
-  );
-}
-
-function Sort({
-  types,
-  sort,
-  setSort,
-}: {
-  types: string[];
-  sort: string;
-  setSort: (type: string) => void;
-}) {
-  return (
-    <select
-      name="sort"
-      id="sort"
-      defaultValue={sort}
-      onChange={(e) => {
-        setSort(e.currentTarget.value);
-      }}
-    >
-      {types.map((type) => (
-        <option key={type} value={type}>
-          {type.replace("-", " ")}
-        </option>
-      ))}
-    </select>
   );
 }
 
