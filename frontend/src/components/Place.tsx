@@ -186,6 +186,9 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
           fetch username
         </button>
       )}
+      <p>
+        {comment.likes.length} like{comment.likes.length !== 1 && "s"}
+      </p>
       {user && (
         <button disabled={isLiking} onClick={() => like()}>
           {isLiked ? "remove" : "add"} like
