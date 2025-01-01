@@ -1,5 +1,5 @@
 import { getFormattedPlace, PlaceById, Vote, type Place } from "../lib/places";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../user";
 import { useVote } from "../lib/votes";
 import Form from "../ui/Form";
@@ -155,6 +155,23 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
     },
   });
 
+  const {
+    isPending: isLiking,
+    isError: isLikeError,
+    error: likeError,
+    mutate: like,
+  } = useMutation({
+    mutationFn: () =>
+      mutateApi("PATCH", `/places/${id}/votes/${comment._id}/likes`),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["places", id] }),
+  });
+
+  const isLiked = useMemo(
+    () => comment.likes.findIndex((like) => like.userId === user?.id) !== -1,
+    [comment]
+  );
+
   const isByMe = user?.id === comment.userId;
 
   return (
@@ -169,12 +186,18 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
           fetch username
         </button>
       )}
+      {user && (
+        <button disabled={isLiking} onClick={() => like()}>
+          {isLiked ? "remove" : "add"} like
+        </button>
+      )}
       {isByMe && (
         <button disabled={isDeleting} onClick={() => mutate()}>
           delete
         </button>
       )}
       {isDeleteError && <p>{deleteError.message}</p>}
+      {isLikeError && <p>{likeError.message}</p>}
       {isLoading ? <p>loading username</p> : isError && <p>{error.message}</p>}
     </>
   );

@@ -17,6 +17,7 @@ export interface Vote {
   _id: string;
   userId: string;
   type: VoteType;
+  likes: { _id: string; userId: string }[];
   text?: string;
 }
 
