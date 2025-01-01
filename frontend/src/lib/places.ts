@@ -1,4 +1,4 @@
-export type VoteType = "UP" | "DOWN";
+import { Vote, VoteType } from "./votes";
 
 export interface Place {
   _id: string;
@@ -11,14 +11,6 @@ export interface Place {
   voted?: VoteType;
   up: number;
   down: number;
-}
-
-export interface Vote {
-  _id: string;
-  userId: string;
-  type: VoteType;
-  likes: { _id: string; userId: string }[];
-  text?: string;
 }
 
 export interface PlaceById extends Place {

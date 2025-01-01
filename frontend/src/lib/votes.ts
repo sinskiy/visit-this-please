@@ -1,6 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "./fetch";
-import { VoteType } from "./places";
+
+export type VoteType = "UP" | "DOWN";
+
+export interface Vote {
+  _id: string;
+  userId: string;
+  type: VoteType;
+  likes: { _id: string; userId: string }[];
+  text?: string;
+}
 
 export function useVote() {
   const queryClient = useQueryClient();

@@ -1,7 +1,7 @@
-import { getFormattedPlace, PlaceById, Vote, type Place } from "../lib/places";
+import { getFormattedPlace, PlaceById, type Place } from "../lib/places";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../user";
-import { useVote } from "../lib/votes";
+import { useVote, Vote } from "../lib/votes";
 import Form from "../ui/Form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutateApi, queryApi } from "../lib/fetch";
