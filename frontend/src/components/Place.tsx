@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { infer as inferType, object, string } from "zod";
 import Sort from "./Sort";
 import { useSearchParams } from "react-router";
+import { usePlaceSort } from "../lib/sort";
 
 const SORT_OPTIONS = ["likes", "last-added", "upvote-first", "downvote-first"];
 export default function Place({
@@ -22,7 +23,7 @@ export default function Place({
   const { user } = useContext(UserContext);
 
   const [params, setParams] = useSearchParams();
-  const sort = params.get("sort") ?? "last-added";
+  const sort = usePlaceSort();
   function setSort(type: string) {
     params.set("sort", type);
     setParams(params);
