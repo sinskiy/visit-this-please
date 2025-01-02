@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useEffect, useMemo, useState } from "react";
 import Form from "../ui/Form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi } from "../lib/fetch";
+import { mutateApi, queryApi } from "../lib/fetch";
 import { object, string, infer as inferType } from "zod";
 import { UserContext } from "../user";
 import { Like, type Reply, Vote } from "../lib/votes";
@@ -178,7 +178,7 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
           <ul>
             {vote.replies.map((reply) => (
               <li key={reply._id}>
-                <Reply reply={reply} voteId={vote._id} />
+                <Reply placeId={placeId} reply={reply} voteId={vote._id} />
               </li>
             ))}
           </ul>
@@ -304,7 +304,20 @@ function useReply(
   return { mutation, onSubmit };
 }
 
-function Reply({ voteId, reply }: { voteId: string; reply: Reply }) {
+function Reply({
+  placeId,
+  voteId,
+  reply,
+}: {
+  placeId: string;
+  voteId: string;
+  reply: Reply;
+}) {
+  const { user } = useContext(UserContext);
+  const isMyReply = user?.id === reply.userId;
+
+  const deleteReplyMutation = useDeleteReply(placeId, voteId, reply._id);
+
   return (
     <>
       <p id={`reply-${reply._id}`}>
@@ -325,6 +338,32 @@ function Reply({ voteId, reply }: { voteId: string; reply: Reply }) {
           </>
         )}
       </p>
+      {isMyReply && (
+        <button
+          disabled={deleteReplyMutation.isPending}
+          onClick={() => deleteReplyMutation.mutate()}
+        >
+          delete
+        </button>
+      )}
+      {deleteReplyMutation.isError && (
+        <p>{deleteReplyMutation.error.message}</p>
+      )}
     </>
   );
+}
+
+function useDeleteReply(placeId: string, voteId: string, replyId: string) {
+  const queryClient = useQueryClient();
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: () =>
+      queryApi(`/places/${placeId}/votes/${voteId}/replies/${replyId}`, {
+        method: "DELETE",
+        credentials: "include",
+      }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["places", placeId] }),
+  });
+  return deleteCommentMutation;
 }
