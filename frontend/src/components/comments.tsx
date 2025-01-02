@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "../lib/fetch";
 import { object, string, infer as inferType } from "zod";
 import { UserContext } from "../user";
-import { type Reply, Vote } from "../lib/votes";
+import { Like, type Reply, Vote } from "../lib/votes";
 import Sort from "./Sort";
 import { usePlaceSort } from "../lib/sort";
 import { useSearchParams } from "react-router";
@@ -48,10 +48,10 @@ export default function Comments({
       <Sort types={SORT_OPTIONS} sort={sort} setSort={setSort} />
       <ul>
         {votes.map(
-          (comment) =>
-            comment.text && (
-              <li key={comment.userId}>
-                <Comment placeId={placeId} comment={comment} />
+          (vote) =>
+            vote.text && (
+              <li key={vote.userId}>
+                <Comment placeId={placeId} vote={vote} />
               </li>
             )
         )}
@@ -129,21 +129,21 @@ function useComment(id: string, voteId?: string) {
 const commentScheme = object({ text: string().min(1) });
 type CommentScheme = inferType<typeof commentScheme>;
 
-function Comment({ placeId, comment }: { placeId: string; comment: Vote }) {
+function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
   const { user } = useContext(UserContext);
-  const isMyComment = user?.id === comment.userId;
+  const isMyComment = user?.id === vote.userId;
 
-  const deleteCommentMutation = useDeleteComment(placeId, comment);
+  const deleteCommentMutation = useDeleteComment(placeId, vote._id);
 
-  const { likeMutation, isLiked } = useLike(placeId, comment);
+  const { likeMutation, isLiked } = useLike(placeId, vote._id, vote.likes);
 
   const [showReplies, setShowReplies] = useState(false);
 
   return (
     <>
-      {comment.text} by <FetchUsername userId={comment.userId} />
-      <p id={`comment-${comment._id}`}>
-        {comment.likes.length} like{comment.likes.length !== 1 && "s"}
+      {vote.text} by <FetchUsername userId={vote.userId} />
+      <p id={`comment-${vote._id}`}>
+        {vote.likes.length} like{vote.likes.length !== 1 && "s"}
       </p>
       {user && (
         <button
@@ -175,28 +175,28 @@ function Comment({ placeId, comment }: { placeId: string; comment: Vote }) {
       <label htmlFor="show-replies">show replies</label>
       {showReplies && (
         <>
-          <ReplyForm placeId={placeId} voteId={comment._id} />
           <ul>
-            {comment.replies.map((reply) => (
+            {vote.replies.map((reply) => (
               <li key={reply._id}>
-                <Reply reply={reply} placeId={placeId} voteId={comment._id} />
+                <Reply reply={reply} voteId={vote._id} />
               </li>
             ))}
           </ul>
+          <ReplyForm placeId={placeId} voteId={vote._id} />
         </>
       )}
     </>
   );
 }
 
-function useDeleteComment(id: string, comment: Vote) {
+function useDeleteComment(placeId: string, voteId: string) {
   const queryClient = useQueryClient();
 
   const deleteCommentMutation = useMutation({
     mutationFn: () =>
-      mutateApi("PATCH", `/places/${id}/votes/${comment._id}`, { text: "" }),
+      mutateApi("PATCH", `/places/${placeId}/votes/${voteId}`, { text: "" }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["places", id] });
+      queryClient.invalidateQueries({ queryKey: ["places", placeId] });
       queryClient.invalidateQueries({
         queryKey: ["places", { sort: "comments" }],
       });
@@ -205,21 +205,21 @@ function useDeleteComment(id: string, comment: Vote) {
   return deleteCommentMutation;
 }
 
-function useLike(id: string, comment: Vote) {
+function useLike(placeId: string, voteId: string, likes: Like[]) {
   const { user } = useContext(UserContext);
 
   const queryClient = useQueryClient();
 
   const likeMutation = useMutation({
     mutationFn: () =>
-      mutateApi("PATCH", `/places/${id}/votes/${comment._id}/likes`),
+      mutateApi("PATCH", `/places/${placeId}/votes/${voteId}/likes`),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["places", id] }),
+      queryClient.invalidateQueries({ queryKey: ["places", placeId] }),
   });
 
   const isLiked = useMemo(
-    () => comment.likes.findIndex((like) => like.userId === user?.id) !== -1,
-    [comment]
+    () => likes.findIndex((like) => like.userId === user?.id) !== -1,
+    [likes.length, user?.id]
   );
 
   return { likeMutation, isLiked };
@@ -304,15 +304,7 @@ function useReply(
   return { mutation, onSubmit };
 }
 
-function Reply({
-  placeId,
-  voteId,
-  reply,
-}: {
-  placeId: string;
-  voteId: string;
-  reply: Reply;
-}) {
+function Reply({ voteId, reply }: { voteId: string; reply: Reply }) {
   return (
     <>
       <p id={`reply-${reply._id}`}>
@@ -333,12 +325,6 @@ function Reply({
           </>
         )}
       </p>
-      <ReplyForm
-        placeId={placeId}
-        voteId={voteId}
-        replyId={reply._id}
-        replyUserId={reply.userId}
-      />
     </>
   );
 }
