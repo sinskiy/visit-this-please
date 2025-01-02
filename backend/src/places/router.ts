@@ -220,6 +220,7 @@ router.post("/:id/votes/:voteId/replies", isUser, async (req, res) => {
     userId: req.user!.id,
     text: req.body.text,
     replyId: req.body.replyId,
+    replyUserId: req.body.replyUserId,
   });
 
   await place.save();

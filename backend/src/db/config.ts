@@ -14,6 +14,7 @@ const likeSchema = new Schema({
 const replySchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   replyId: { type: Schema.Types.ObjectId },
+  replyUserId: { type: Schema.Types.ObjectId, ref: "User" },
 
   text: { type: String, required: true },
 });
