@@ -8,7 +8,7 @@ import { addPlaceSchema } from "./types.ts";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  const { sort = "positivity", page = 1, search = "" } = req.query;
+  const { sort = "positive", page = 1, search = "" } = req.query;
 
   if (typeof search !== "string") {
     throw new ErrorWithStatus("Search type is invalid", 400);
@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
           a.votes.filter((vote) => vote.type === "DOWN").length
       );
       break;
-    case "positivity":
+    case "positive":
       places.sort(
         (a, b) =>
           b.votes.filter((vote) => vote.type === "UP").length -
@@ -43,7 +43,7 @@ router.get("/", async (req, res) => {
             a.votes.filter((vote) => vote.type === "DOWN").length)
       );
       break;
-    case "negativity":
+    case "negative":
       places.sort(
         (a, b) =>
           a.votes.filter((vote) => vote.type === "UP").length -

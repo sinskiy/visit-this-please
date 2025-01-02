@@ -14,8 +14,8 @@ const SORT_OPTIONS = [
   "upvotes",
   "downvotes",
   "votes",
-  "positivity",
-  "negativity",
+  "positive",
+  "negative",
   "last-voted",
   "last-added",
   "comments",
@@ -24,7 +24,7 @@ export default function Home() {
   const { user } = useContext(UserContext);
 
   const [params, setParams] = useSearchParams();
-  const sort = params.get("sort") ?? "positivity";
+  const sort = params.get("sort") ?? "positive";
   const page = Number(params.get("page") ?? 1);
   const search = params.get("search") ?? "";
 
