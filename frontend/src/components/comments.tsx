@@ -1,6 +1,6 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext, useEffect, useMemo } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import Form from "../ui/Form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "../lib/fetch";
@@ -137,6 +137,8 @@ function Comment({ placeId, comment }: { placeId: string; comment: Vote }) {
 
   const { likeMutation, isLiked } = useLike(placeId, comment);
 
+  const [showReplies, setShowReplies] = useState(false);
+
   return (
     <>
       {comment.text} by <FetchUsername userId={comment.userId} />
@@ -163,14 +165,26 @@ function Comment({ placeId, comment }: { placeId: string; comment: Vote }) {
         <p>{deleteCommentMutation.error.message}</p>
       )}
       {likeMutation.isError && <p>{likeMutation.error.message}</p>}
-      <ReplyForm placeId={placeId} voteId={comment._id} />
-      <ul>
-        {comment.replies.map((reply) => (
-          <li key={reply._id}>
-            <Reply reply={reply} placeId={placeId} voteId={comment._id} />
-          </li>
-        ))}
-      </ul>
+      <input
+        type="checkbox"
+        name="show-replies"
+        id="show-replies"
+        checked={showReplies}
+        onChange={(e) => setShowReplies(e.currentTarget.checked)}
+      />
+      <label htmlFor="show-replies">show replies</label>
+      {showReplies && (
+        <>
+          <ReplyForm placeId={placeId} voteId={comment._id} />
+          <ul>
+            {comment.replies.map((reply) => (
+              <li key={reply._id}>
+                <Reply reply={reply} placeId={placeId} voteId={comment._id} />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </>
   );
 }
