@@ -227,5 +227,30 @@ router.post("/:id/votes/:voteId/replies", isUser, async (req, res) => {
 
   res.json({ status: "success" });
 });
+router.delete(
+  "/:id/votes/:voteId/replies/:replyId",
+  isUser,
+  async (req, res) => {
+    const { id, voteId, replyId } = req.params;
+
+    const place = await Place.findById(id);
+
+    const vote = place && place.votes.id(voteId);
+
+    const reply = vote && vote.replies.id(replyId);
+    if (!reply) {
+      throw new Error();
+    }
+    if (reply.userId.toString() !== req.user!.id) {
+      throw new ErrorWithStatus("You're not the author", 403);
+    }
+
+    reply.deleteOne();
+
+    await place.save();
+
+    res.json({ status: "success" });
+  }
+);
 
 export default router;
