@@ -11,6 +11,12 @@ export const User = model("User", userSchema);
 const likeSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 });
+const replySchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  replyId: { type: Schema.Types.ObjectId },
+
+  text: String,
+});
 
 const voteSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -23,6 +29,7 @@ const voteSchema = new Schema({
   },
 
   likes: [likeSchema],
+  replies: [replySchema],
 });
 
 const placeSchema = new Schema({
