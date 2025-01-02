@@ -44,7 +44,7 @@ export default function InputFieldWithSelect({
     clearTimeout(timeout);
     timeout = setTimeout(() => {
       setSearch(e.target.value);
-    }, 1000);
+    }, 500);
   }
 
   return (
