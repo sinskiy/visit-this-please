@@ -191,10 +191,16 @@ router.patch("/:id/votes/:voteId", isUser, async (req, res) => {
 
   const place = await Place.findById(id);
   const vote = place && place.votes.id(voteId);
-  if (vote) {
-    vote.text = req.body.text || null;
-    await place.save();
+  if (!vote) {
+    throw new Error();
   }
+  if (vote.userId.toString() !== req.user!.id) {
+    throw new ErrorWithStatus("Not your vote", 403);
+  }
+  vote.text = req.body.text || null;
+
+  await place.save();
+
   res.json({ status: "success" });
 });
 
