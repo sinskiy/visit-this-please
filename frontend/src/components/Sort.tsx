@@ -18,7 +18,7 @@ export default function Sort({
     >
       {types.map((type) => (
         <option key={type} value={type}>
-          {type.replace("-", " ")}
+          {type.replace(/-/g, " ")}
         </option>
       ))}
     </select>
