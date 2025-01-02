@@ -15,7 +15,7 @@ const replySchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   replyId: { type: Schema.Types.ObjectId },
 
-  text: String,
+  text: { type: String, required: true },
 });
 
 const voteSchema = new Schema({

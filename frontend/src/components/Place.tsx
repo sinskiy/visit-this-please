@@ -1,7 +1,7 @@
 import { getFormattedPlace, PlaceById, type Place } from "../lib/places";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../user";
-import { useVote, Vote } from "../lib/votes";
+import { type Reply, useVote, Vote } from "../lib/votes";
 import Form from "../ui/Form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { mutateApi, queryApi } from "../lib/fetch";
@@ -47,7 +47,7 @@ export default function Place({
               (comment) =>
                 comment.text && (
                   <li key={comment.userId}>
-                    <Comment id={place._id} comment={comment} />
+                    <Comment placeId={place._id} comment={comment} />
                   </li>
                 )
             )}
@@ -147,33 +147,18 @@ function useComment(id: string, voteId?: string) {
 const commentScheme = object({ text: string().min(1) });
 type CommentScheme = inferType<typeof commentScheme>;
 
-function Comment({ id, comment }: { id: string; comment: Vote }) {
+function Comment({ placeId, comment }: { placeId: string; comment: Vote }) {
   const { user } = useContext(UserContext);
   const isMyComment = user?.id === comment.userId;
 
-  const { fetchUsernameQuery, setDoFetchUsername } = useFetchUsername(comment);
+  const deleteCommentMutation = useDeleteComment(placeId, comment);
 
-  const deleteCommentMutation = useDeleteComment(id, comment);
-
-  const { likeMutation, isLiked } = useLike(id, comment);
+  const { likeMutation, isLiked } = useLike(placeId, comment);
 
   return (
     <>
-      {comment.text} by{" "}
-      {isMyComment
-        ? user?.username
-        : fetchUsernameQuery.data?.username ?? comment.userId}
-      {!isMyComment && (
-        <button
-          onClick={() => setDoFetchUsername(true)}
-          disabled={
-            fetchUsernameQuery.data && "username" in fetchUsernameQuery.data
-          }
-        >
-          fetch username
-        </button>
-      )}
-      <p>
+      {comment.text} by <FetchUsername userId={comment.userId} />
+      <p id={`comment-${comment._id}`}>
         {comment.likes.length} like{comment.likes.length !== 1 && "s"}
       </p>
       {user && (
@@ -196,20 +181,23 @@ function Comment({ id, comment }: { id: string; comment: Vote }) {
         <p>{deleteCommentMutation.error.message}</p>
       )}
       {likeMutation.isError && <p>{likeMutation.error.message}</p>}
-      {fetchUsernameQuery.isLoading ? (
-        <p>loading username</p>
-      ) : (
-        fetchUsernameQuery.isError && <p>{fetchUsernameQuery.error.message}</p>
-      )}
+      <ReplyForm placeId={placeId} voteId={comment._id} />
+      <ul>
+        {comment.replies.map((reply) => (
+          <li key={reply._id}>
+            <Reply reply={reply} placeId={placeId} voteId={comment._id} />
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
 
-function useFetchUsername(comment: Vote) {
+function useFetchUsername(userId: string) {
   const [doFetchUsername, setDoFetchUsername] = useState(false);
   const fetchUsernameQuery = useQuery({
-    queryKey: ["users", comment.userId],
-    queryFn: () => queryApi(`/users/${comment.userId}`),
+    queryKey: ["users", userId],
+    queryFn: () => queryApi(`/users/${userId}`),
     staleTime: 1000 * 60 * 60 * 24,
     enabled: doFetchUsername,
   });
@@ -250,4 +238,125 @@ function useLike(id: string, comment: Vote) {
   );
 
   return { likeMutation, isLiked };
+}
+
+function ReplyForm({
+  placeId,
+  voteId,
+  replyId,
+}: {
+  placeId: string;
+  voteId: string;
+  replyId?: string;
+}) {
+  const { mutation, onSubmit } = useReply(placeId, voteId, replyId);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitSuccessful },
+    reset,
+  } = useForm<CommentScheme>({
+    resolver: zodResolver(commentScheme),
+  });
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
+
+  return (
+    <Form onSubmit={handleSubmit(onSubmit)} mutation={mutation}>
+      <input type="text" id="reply" {...register("text")} />
+    </Form>
+  );
+}
+
+function useReply(placeId: string, voteId: string, replyId?: string) {
+  const queryClient = useQueryClient();
+
+  const onSubmit: SubmitHandler<CommentScheme> = (data) => {
+    mutation.mutate({ ...data, placeId, voteId, replyId });
+  };
+
+  const mutation = useMutation({
+    mutationFn: ({
+      placeId,
+      voteId,
+      text,
+      replyId,
+    }: {
+      placeId: string;
+      voteId: string;
+      text: string;
+      replyId: string | undefined;
+    }) =>
+      mutateApi("POST", `/places/${placeId}/votes/${voteId}/replies`, {
+        text,
+        replyId: replyId,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["places", placeId] });
+    },
+  });
+
+  return { mutation, onSubmit };
+}
+
+function Reply({
+  placeId,
+  voteId,
+  reply,
+}: {
+  placeId: string;
+  voteId: string;
+  reply: Reply;
+}) {
+  return (
+    <>
+      <p id={`reply-${reply._id}`}>
+        {reply.text} by <FetchUsername userId={reply.userId} /> to{" "}
+        <a
+          href={
+            reply.replyId ? `#reply-${reply.replyId}` : `#comment-${voteId}`
+          }
+        >
+          {reply.replyId ? "reply" : "comment"}
+        </a>
+      </p>
+      <ReplyForm placeId={placeId} voteId={voteId} replyId={reply._id} />
+    </>
+  );
+}
+
+function FetchUsername({ userId }: { userId: string }) {
+  const { user } = useContext(UserContext);
+  const isMine = user?.id === userId;
+
+  const { setDoFetchUsername, fetchUsernameQuery } = useFetchUsername(userId);
+
+  return (
+    <>
+      {isMine ? (
+        user?.username
+      ) : fetchUsernameQuery.isLoading ? (
+        <i>loading username</i>
+      ) : fetchUsernameQuery.isError ? (
+        fetchUsernameQuery.error.message
+      ) : (
+        fetchUsernameQuery.data?.username ?? userId
+      )}
+      {!isMine && (
+        <button
+          onClick={() => setDoFetchUsername(true)}
+          disabled={
+            fetchUsernameQuery.data && "username" in fetchUsernameQuery.data
+          }
+        >
+          fetch username
+        </button>
+      )}
+    </>
+  );
 }
