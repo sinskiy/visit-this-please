@@ -6,7 +6,8 @@ export type VoteType = "UP" | "DOWN";
 export interface Reply {
   _id: string;
   userId: string;
-  replyId: string;
+  replyId?: string;
+  replyUserId?: string;
   text: string;
 }
 
