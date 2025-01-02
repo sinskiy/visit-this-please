@@ -202,4 +202,29 @@ router.patch("/:id/votes/:voteId/likes", isUser, async (req, res) => {
   res.json({ status: "success" });
 });
 
+router.post("/:id/votes/:voteId/replies", isUser, async (req, res) => {
+  if (!req.body.text) {
+    throw new ErrorWithStatus("No text", 400);
+  }
+
+  const { id, voteId } = req.params;
+
+  const place = await Place.findById(id);
+
+  const vote = place && place.votes.id(voteId);
+  if (!vote) {
+    throw new Error();
+  }
+
+  vote.replies.push({
+    userId: req.user!.id,
+    text: req.body.text,
+    replyId: req.body.replyId,
+  });
+
+  await place.save();
+
+  res.json({ status: "success" });
+});
+
 export default router;

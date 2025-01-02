@@ -3,11 +3,19 @@ import { mutateApi } from "./fetch";
 
 export type VoteType = "UP" | "DOWN";
 
+export interface Reply {
+  _id: string;
+  userId: string;
+  replyId: string;
+  text: string;
+}
+
 export interface Vote {
   _id: string;
   userId: string;
   type: VoteType;
   likes: { _id: string; userId: string }[];
+  replies: Reply[];
   text?: string;
 }
 
