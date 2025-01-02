@@ -1,7 +1,7 @@
 import { useContext, useRef } from "react";
 import { UserContext } from "../user";
 import { createPortal } from "react-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryApi } from "../lib/fetch";
 import { Place as PlaceI } from "../lib/places";
 import AddPlace from "../components/AddPlace";
@@ -25,6 +25,7 @@ const SORT_OPTIONS = [
   "comments",
 ];
 export default function Home() {
+  const queryClient = useQueryClient();
   const { user } = useContext(UserContext);
 
   const [params, setParams] = useSearchParams();
@@ -60,6 +61,16 @@ export default function Home() {
     error: voteError,
   } = useVote();
 
+  function prefetchPlace(id: string) {
+    queryClient.prefetchQuery({
+      queryKey: ["places", id, { sort: "last-added" }],
+      queryFn: () =>
+        queryApi(`/places/${id}`, {
+          credentials: "include",
+        }),
+    });
+  }
+
   return (
     <>
       <p>hello, {user?.username ?? "world"}</p>
@@ -79,7 +90,11 @@ export default function Home() {
       ) : data.length > 0 ? (
         <ul>
           {data!.map((place) => (
-            <li key={place._id}>
+            <li
+              key={place._id}
+              onFocus={() => prefetchPlace(place._id)}
+              onMouseEnter={() => prefetchPlace(place._id)}
+            >
               <Place place={place} />
               <Link to={`/${place._id}`}>comments</Link>
             </li>
