@@ -43,6 +43,15 @@ router.get("/", async (req, res) => {
             a.votes.filter((vote) => vote.type === "DOWN").length)
       );
       break;
+    case "positive-to-negative":
+      places.sort(
+        (a, b) =>
+          b.votes.filter((vote) => vote.type === "UP").length /
+            b.votes.filter((vote) => vote.type === "DOWN").length -
+          a.votes.filter((vote) => vote.type === "UP").length /
+            a.votes.filter((vote) => vote.type === "DOWN").length
+      );
+      break;
     case "negative":
       places.sort(
         (a, b) =>
@@ -50,6 +59,15 @@ router.get("/", async (req, res) => {
           a.votes.filter((vote) => vote.type === "DOWN").length -
           (b.votes.filter((vote) => vote.type === "UP").length -
             b.votes.filter((vote) => vote.type === "DOWN").length)
+      );
+      break;
+    case "negative-to-positive":
+      places.sort(
+        (a, b) =>
+          b.votes.filter((vote) => vote.type === "DOWN").length /
+            b.votes.filter((vote) => vote.type === "UP").length -
+          a.votes.filter((vote) => vote.type === "DOWN").length /
+            a.votes.filter((vote) => vote.type === "UP").length
       );
       break;
     case "last-voted":
