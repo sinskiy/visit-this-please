@@ -11,11 +11,16 @@ export interface Reply {
   text: string;
 }
 
+export interface Like {
+  _id: string;
+  userId: string;
+}
+
 export interface Vote {
   _id: string;
   userId: string;
   type: VoteType;
-  likes: { _id: string; userId: string }[];
+  likes: Like[];
   replies: Reply[];
   text?: string;
 }
