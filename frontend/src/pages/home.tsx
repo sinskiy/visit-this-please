@@ -10,6 +10,8 @@ import { useVote } from "../lib/votes";
 import Place from "../components/Place";
 import Sort from "../components/Sort";
 
+const PAGE_LENGTH = 5;
+
 const SORT_OPTIONS = [
   "upvotes",
   "downvotes",
@@ -90,6 +92,7 @@ export default function Home() {
         page={page}
         setPrevPage={setPrevPage}
         setNextPage={setNextPage}
+        lastPage={!data || data.length !== PAGE_LENGTH}
       />
       {isVoteLoading ? (
         <p>voting...</p>
@@ -128,10 +131,12 @@ function Pagination({
   page,
   setPrevPage,
   setNextPage,
+  lastPage,
 }: {
   page: number;
   setPrevPage: () => void;
   setNextPage: () => void;
+  lastPage: boolean;
 }) {
   return (
     <>
@@ -139,7 +144,9 @@ function Pagination({
         prev
       </button>
       {/* TODO: max page */}
-      <button onClick={setNextPage}>next</button>
+      <button onClick={setNextPage} disabled={lastPage}>
+        next
+      </button>
     </>
   );
 }
