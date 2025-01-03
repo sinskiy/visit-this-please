@@ -35,6 +35,7 @@ export function getPlaceWithVotes(
 
   const {
     _id,
+    userId,
     country,
     stateOrRegion,
     settlement,
@@ -46,6 +47,7 @@ export function getPlaceWithVotes(
 
   return {
     _id,
+    userId: extended ? undefined : userId,
     country,
     stateOrRegion,
     settlement,
@@ -57,5 +59,6 @@ export function getPlaceWithVotes(
     down,
     userVote: extended ? userVote : undefined,
     votes: extended ? votes : undefined,
+    votesLength: extended ? undefined : votes.length,
   };
 }
