@@ -1,19 +1,21 @@
 export default function Sort({
   types,
-  sort,
-  setSort,
+  value,
+  setValue,
+  isSort,
 }: {
   types: string[];
-  sort: string;
-  setSort: (type: string) => void;
+  value: string;
+  setValue: (type: string) => void;
+  isSort: boolean;
 }) {
   return (
     <select
-      name="sort"
-      id="sort"
-      defaultValue={sort}
+      name={isSort ? "sort" : "filter"}
+      id={isSort ? "sort" : "filter"}
+      defaultValue={value}
       onChange={(e) => {
-        setSort(e.currentTarget.value);
+        setValue(e.currentTarget.value);
       }}
     >
       {types.map((type) => (
