@@ -1,6 +1,6 @@
 import { Vote, VoteType } from "./votes";
 
-export interface Place {
+interface PlaceBase {
   _id: string;
   country: string;
   stateOrRegion?: string;
@@ -13,7 +13,12 @@ export interface Place {
   down: number;
 }
 
-export interface PlaceById extends Place {
+export interface Place extends PlaceBase {
+  userId: string;
+  votesLength: number;
+}
+
+export interface PlaceById extends PlaceBase {
   userVote?: Vote;
   votes: Vote[];
 }

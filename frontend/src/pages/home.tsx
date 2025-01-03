@@ -196,7 +196,6 @@ function usePlaces({
   page: number;
   search: string;
 }) {
-  console.log(filter);
   const query = useQuery<PlaceI[]>({
     queryKey: ["places", { sort, filter, page, search }],
     queryFn: () =>
