@@ -7,7 +7,7 @@ import { mutateApi, queryApi } from "../lib/fetch";
 import { object, string, infer as inferType } from "zod";
 import { UserContext } from "../user";
 import { Like, type Reply, Vote } from "../lib/votes";
-import Sort from "./Sort";
+import Sort from "./SortOrFilter";
 import { usePlaceSort } from "../lib/sort";
 import { useSearchParams } from "react-router";
 import FetchUsername from "./FetchUsername";

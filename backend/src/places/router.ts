@@ -8,14 +8,19 @@ import { addPlaceSchema } from "./types.ts";
 const router = Router();
 
 router.get("/", async (req, res) => {
-  const { sort = "positive", page = 1, search = "" } = req.query;
+  const {
+    sort = "positive",
+    page = 1,
+    search = "",
+    filter = "none",
+  } = req.query;
 
   if (typeof search !== "string") {
     throw new ErrorWithStatus("Search type is invalid", 400);
   }
 
-  const filter = search.length > 0 ? { $text: { $search: search } } : {};
-  const places = await Place.find(filter);
+  const placeFilter = search.length > 0 ? { $text: { $search: search } } : {};
+  let places = await Place.find(placeFilter);
   switch (sort) {
     case "votes":
       places.sort((a, b) => b.votes.length - a.votes.length);
@@ -90,6 +95,24 @@ router.get("/", async (req, res) => {
         (a, b) =>
           b.votes.filter((vote) => typeof vote.text === "string").length -
           a.votes.filter((vote) => typeof vote.text === "string").length
+      );
+  }
+
+  switch (filter) {
+    case "voted-by-me":
+      places = places.filter(
+        (place) =>
+          place.votes.findIndex(
+            (vote) => vote.userId.toString() === req.user?.id
+          ) !== -1
+      );
+      break;
+    case "commented-by-me":
+      places = places.filter(
+        (place) =>
+          place.votes.findIndex(
+            (vote) => vote.userId.toString() === req.user?.id && vote.text
+          ) !== -1
       );
   }
 

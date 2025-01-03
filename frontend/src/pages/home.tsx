@@ -8,7 +8,8 @@ import AddPlace from "../components/AddPlace";
 import { Link, useSearchParams } from "react-router";
 import { useVote } from "../lib/votes";
 import Place from "../components/Place";
-import Sort from "../components/Sort";
+import Sort from "../components/SortOrFilter";
+const Filter = Sort;
 
 const PAGE_LENGTH = 5;
 
@@ -24,12 +25,14 @@ const SORT_OPTIONS = [
   "last-added",
   "comments",
 ];
+const FILTER_OPTIONS = ["none", "voted-by-me", "commented-by-me"];
 export default function Home() {
   const queryClient = useQueryClient();
   const { user } = useContext(UserContext);
 
   const [params, setParams] = useSearchParams();
   const sort = params.get("sort") ?? "positive";
+  const filter = params.get("filter") ?? "none";
   const page = Number(params.get("page") ?? 1);
   const search = params.get("search") ?? "";
 
@@ -39,6 +42,11 @@ export default function Home() {
   }
   function setSort(type: string) {
     params.set("sort", type);
+    params.set("page", "1");
+    setParams(params);
+  }
+  function setFilter(type: string) {
+    params.set("filter", type);
     params.set("page", "1");
     setParams(params);
   }
@@ -53,7 +61,12 @@ export default function Home() {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const { data, isLoading, isError, error } = usePlaces({ sort, page, search });
+  const { data, isLoading, isError, error } = usePlaces({
+    sort,
+    filter,
+    page,
+    search,
+  });
 
   const {
     isPending: isVoteLoading,
@@ -81,7 +94,13 @@ export default function Home() {
         </button>
       )}
       <Search setSearch={setSearch} />
-      <Sort types={SORT_OPTIONS} sort={sort} setSort={setSort} />
+      <Sort types={SORT_OPTIONS} value={sort} setValue={setSort} isSort />
+      <Filter
+        types={FILTER_OPTIONS}
+        value={filter}
+        setValue={setFilter}
+        isSort={false}
+      />
       {/* TODO: better loading (skeleton) */}
       {isLoading === true ? (
         <p>loading...</p>
@@ -168,19 +187,25 @@ function Pagination({
 
 function usePlaces({
   sort,
+  filter,
   page,
   search,
 }: {
   sort: string;
+  filter: string;
   page: number;
   search: string;
 }) {
+  console.log(filter);
   const query = useQuery<PlaceI[]>({
-    queryKey: ["places", { sort, page, search }],
+    queryKey: ["places", { sort, filter, page, search }],
     queryFn: () =>
-      queryApi(`/places?sort=${sort}&page=${page}&search=${search}`, {
-        credentials: "include",
-      }),
+      queryApi(
+        `/places?sort=${sort}&filter=${filter}&page=${page}&search=${search}`,
+        {
+          credentials: "include",
+        }
+      ),
   });
 
   return query;
