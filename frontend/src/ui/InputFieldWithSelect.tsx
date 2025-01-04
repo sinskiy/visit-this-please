@@ -8,11 +8,11 @@ import {
 import InputField from "./InputField";
 import { FieldError, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { EditPlaceSchema } from "../types/editPlaceSchema";
+import styled from "styled-components";
 
 interface InputFieldWithSelectProps
   extends InputHTMLAttributes<HTMLInputElement> {
   type: HTMLInputTypeAttribute;
-  // TODO: dynamic schema
   id: keyof EditPlaceSchema;
   label?: ReactNode;
   values: readonly string[];
@@ -24,6 +24,29 @@ interface InputFieldWithSelectProps
   error: FieldError | undefined;
   setValue: UseFormSetValue<EditPlaceSchema>;
 }
+
+const Wrapper = styled.div`
+  position: relative;
+  width: fit-content;
+`;
+
+const List = styled.ul`
+  position: absolute;
+  top: 80%;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: scroll;
+  & button {
+    width: 100%;
+    text-align: left;
+    &:hover {
+      opacity: 1;
+      background-color: var(--surface-container-highest);
+    }
+  }
+`;
 
 let timeout: NodeJS.Timeout;
 export default function InputFieldWithSelect({
@@ -59,7 +82,7 @@ export default function InputFieldWithSelect({
   }
 
   return (
-    <>
+    <Wrapper>
       <InputField
         id={id}
         label={label}
@@ -68,7 +91,7 @@ export default function InputFieldWithSelect({
         {...props}
       />
       {search && (
-        <ul>
+        <List role="list" hidden={isSelected}>
           {result.map((value) => (
             <li key={value}>
               <button
@@ -83,8 +106,8 @@ export default function InputFieldWithSelect({
               </button>
             </li>
           ))}
-        </ul>
+        </List>
       )}
-    </>
+    </Wrapper>
   );
 }
