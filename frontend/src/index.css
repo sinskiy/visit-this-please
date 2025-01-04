@@ -1,5 +1,9 @@
 @postcss-material-colors (primary: #ffffff, variant: content);
 
+:root {
+  --animation-pulse: 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 html {
   color-scheme: dark light;
   accent-color: var(--primary);
