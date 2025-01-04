@@ -39,10 +39,22 @@ select {
 
 button {
   border: none;
-  background-color: var(--surface-container);
+  background-color: var(--surface-container-high);
+  border-radius: 4px;
   &:hover,
   &.hover {
     opacity: 0.8;
+  }
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
   }
 }
 
@@ -60,6 +72,7 @@ dialog {
 
 :disabled {
   opacity: 0.5;
+  pointer-events: none;
 }
 
 .primary {

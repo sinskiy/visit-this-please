@@ -1,4 +1,5 @@
 import { SelectHTMLAttributes } from "react";
+import styled from "styled-components";
 
 interface SortProps extends SelectHTMLAttributes<HTMLSelectElement> {
   types: string[];
@@ -8,6 +9,17 @@ interface SortProps extends SelectHTMLAttributes<HTMLSelectElement> {
   $isUser?: boolean;
 }
 
+const Select = styled.select`
+  background-color: var(--surface-container-highest);
+  color: var(--on-surface);
+  border: none;
+  outline: 1px solid var(--outline);
+  border-radius: 4px;
+  &:focus {
+    outline: 2px solid var(--primary);
+  }
+`;
+
 export default function Sort({
   types,
   value,
@@ -16,7 +28,7 @@ export default function Sort({
   ...props
 }: SortProps) {
   return (
-    <select
+    <Select
       name={isSort ? "sort" : "filter"}
       id={isSort ? "sort" : "filter"}
       defaultValue={value}
@@ -30,6 +42,6 @@ export default function Sort({
           {type.replace(/-/g, " ")}
         </option>
       ))}
-    </select>
+    </Select>
   );
 }
