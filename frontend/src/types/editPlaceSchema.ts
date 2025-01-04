@@ -7,7 +7,7 @@ import {
 } from "zod";
 import { COUNTRIES } from "../lib/const";
 
-const addPlaceSchema = object({
+const editPlaceSchema = object({
   country: zodEnum(COUNTRIES, {
     errorMap: () => ({ message: "Invalid country" }),
   }),
@@ -56,6 +56,6 @@ const addPlaceSchema = object({
   { message: "Data must be gradual", path: ["house"] }
 );
 
-export default addPlaceSchema;
+export default editPlaceSchema;
 
-export type AddPlaceSchema = inferType<typeof addPlaceSchema>;
+export type EditPlaceSchema = inferType<typeof editPlaceSchema>;

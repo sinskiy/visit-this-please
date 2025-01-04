@@ -1,10 +1,11 @@
 import { getFormattedPlace, PlaceById, type Place } from "../lib/places";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { UserContext } from "../user";
 import { useVote, VoteType } from "../lib/votes";
 import Comments from "./comments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryApi } from "../lib/fetch";
+import EditPlace from "./EditPlace";
 
 export default function Place({
   place,
@@ -16,15 +17,10 @@ export default function Place({
   const { user } = useContext(UserContext);
   const isMine = "userId" in place && user?.id === place.userId;
 
-  const queryClient = useQueryClient();
-  const { isPending, isError, error, mutate } = useMutation({
-    mutationFn: (placeId: string) =>
-      queryApi(`/places/${placeId}`, {
-        method: "DELETE",
-        credentials: "include",
-      }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["places"] }),
-  });
+  const { isDeleting, isDeleteError, deleteError, deletePlace } =
+    useDeletePlace();
+
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   return (
     <>
@@ -32,9 +28,21 @@ export default function Place({
       {isMine &&
         (place.votesLength === 0 ||
           (place.votesLength === 1 && !place.voted)) && (
-          <button onClick={() => mutate(place._id)}>delete</button>
+          <>
+            <button onClick={() => deletePlace(place._id)}>delete</button>
+            <button onClick={() => dialogRef.current?.showModal()}>edit</button>
+            <EditPlace
+              isCountrySelectedDefault={true}
+              place={place}
+              dialogRef={dialogRef}
+            />
+          </>
         )}
-      {isPending ? <p>deleting...</p> : isError && <p>{error.message}</p>}
+      {isDeleting ? (
+        <p>deleting...</p>
+      ) : (
+        isDeleteError && <p>{deleteError!.message}</p>
+      )}
       <Votes
         placeId={place._id}
         voted={place.voted}
@@ -51,6 +59,26 @@ export default function Place({
       )}
     </>
   );
+}
+
+function useDeletePlace() {
+  const queryClient = useQueryClient();
+
+  const {
+    isPending: isDeleting,
+    isError: isDeleteError,
+    error: deleteError,
+    mutate: deletePlace,
+  } = useMutation({
+    mutationFn: (placeId: string) =>
+      queryApi(`/places/${placeId}`, {
+        method: "DELETE",
+        credentials: "include",
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["places"] }),
+  });
+
+  return { isDeleting, isDeleteError, deleteError, deletePlace };
 }
 
 function Votes({
