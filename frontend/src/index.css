@@ -1,4 +1,4 @@
-@postcss-material-colors (primary: #ffffff, variant: content);
+@postcss-material-colors (primary: #a52a2a, variant: vibrant);
 
 :root {
   --animation-pulse: 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -27,23 +27,23 @@ body {
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-.sr-only {
-  position: absolute;
-  left: -10000px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
 button,
 input,
 textarea,
 select {
-  padding: 4px 20px;
+  padding: 8px 20px;
   font: inherit;
   min-width: 0;
   width: fit-content;
+}
+
+button {
+  border: none;
+  background-color: var(--surface-container);
+  &:hover,
+  &.hover {
+    opacity: 0.8;
+  }
 }
 
 fieldset {
@@ -52,14 +52,14 @@ fieldset {
   margin-bottom: 1rem;
 }
 
-:disabled {
-  opacity: 0.5;
-}
-
 dialog {
   border: none;
   background-color: var(--surface-container);
   color: var(--on-surface);
+}
+
+:disabled {
+  opacity: 0.5;
 }
 
 .primary {
@@ -69,4 +69,13 @@ dialog {
 
 .error-text {
   color: var(--error);
+}
+
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
