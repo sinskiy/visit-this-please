@@ -183,7 +183,8 @@ router.delete("/:id", isUser, async (req, res) => {
   }
   if (
     place.votes.length > 1 ||
-    (place.votes.length === 1 && place.votes[0]?.userId !== req.user?.id)
+    (place.votes.length === 1 &&
+      place.votes[0]?.userId.toString() !== req.user?.id)
   ) {
     throw new ErrorWithStatus("You're not the author", 403);
   }
