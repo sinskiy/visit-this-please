@@ -34,7 +34,7 @@ const CommentList = styled.ul`
 `;
 
 const StyledSort = styled(Sort)`
-  margin-top: 32px;
+  margin-top: ${(props) => (props.$isUser ? "32px" : 0)};
 `;
 
 export default function Comments({
@@ -72,6 +72,7 @@ export default function Comments({
         value={sort}
         setValue={setSort}
         isSort
+        $isUser={!!user}
       />
       {votesWithText.length > 0 ? (
         <CommentList role="list">

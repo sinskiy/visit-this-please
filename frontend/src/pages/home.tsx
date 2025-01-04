@@ -11,6 +11,7 @@ import Sort from "../components/SortOrFilter";
 import InputField from "../ui/InputField";
 import styled from "styled-components";
 import Card from "../ui/Card";
+import Skeleton from "../ui/Skeleton";
 const Filter = Sort;
 
 const PAGE_LENGTH = 5;
@@ -120,7 +121,11 @@ export default function Home() {
         </OptionsWrapper>
         {/* TODO: better loading (skeleton) */}
         {isLoading === true ? (
-          <p>loading...</p>
+          <Places role="list">
+            <Skeleton $width="100%" $height="180px" />
+            <Skeleton $width="100%" $height="180px" />
+            <Skeleton $width="100%" $height="180px" />
+          </Places>
         ) : isError || !data ? (
           <p>{error?.message || "Unexpected error"}</p>
         ) : data.length > 0 ? (

@@ -5,6 +5,7 @@ interface SortProps extends SelectHTMLAttributes<HTMLSelectElement> {
   value: string;
   setValue: (type: string) => void;
   isSort: boolean;
+  $isUser?: boolean;
 }
 
 export default function Sort({

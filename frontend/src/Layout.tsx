@@ -4,6 +4,7 @@ import { UserContext } from "./user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "./lib/fetch";
 import styled from "styled-components";
+import Skeleton from "./ui/Skeleton";
 
 const Header = styled.header`
   display: flex;
@@ -32,10 +33,18 @@ export default function Layout() {
     <>
       <Header>
         <NavLink to="/">home</NavLink>
-        {!user && !isLoading && (
+        {!user && (
           <Nav>
-            <NavLink to="/log-in">log in</NavLink>
-            <NavLink to="/sign-up">sign up</NavLink>
+            {!isLoading ? (
+              <NavLink to="/log-in">log in</NavLink>
+            ) : (
+              <Skeleton $width="48px" $height="16px" />
+            )}
+            {!isLoading ? (
+              <NavLink to="/sign-up">sign up</NavLink>
+            ) : (
+              <Skeleton $width="48px" $height="16px" />
+            )}
           </Nav>
         )}
         {user && (
