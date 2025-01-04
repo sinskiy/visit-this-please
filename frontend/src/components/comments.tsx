@@ -327,7 +327,11 @@ function ReplyForm({
   }, [isSubmitSuccessful, reset]);
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} mutation={mutation}>
+    <Form
+      onSubmit={handleSubmit(onSubmit)}
+      mutation={mutation}
+      customButton={Button}
+    >
       <InputField
         type="text"
         id="reply"
@@ -381,6 +385,10 @@ const Button = styled.button`
   background-color: var(--surface-container-highest);
 `;
 
+const MarginBottomButton = styled(Button)`
+  margin-bottom: 1rem;
+`;
+
 function Reply({
   placeId,
   voteId,
@@ -420,12 +428,20 @@ function Reply({
         )}
       </p>
       {isMyReply && (
-        <Button
+        <MarginBottomButton
           disabled={deleteReplyMutation.isPending}
           onClick={() => deleteReplyMutation.mutate()}
         >
           delete
-        </Button>
+        </MarginBottomButton>
+      )}
+      {user && (
+        <ReplyForm
+          placeId={placeId}
+          voteId={voteId}
+          replyId={reply._id}
+          replyUserId={reply.userId}
+        />
       )}
       {deleteReplyMutation.isError && (
         <p>{deleteReplyMutation.error.message}</p>

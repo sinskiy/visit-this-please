@@ -1,5 +1,5 @@
 import { UseMutationResult } from "@tanstack/react-query";
-import { FormEventHandler, PropsWithChildren } from "react";
+import { ComponentType, FormEventHandler, PropsWithChildren } from "react";
 import styled from "styled-components";
 
 const StyledForm = styled.form`
@@ -14,19 +14,22 @@ export default function Form<R, T>({
   onSubmit,
   children,
   name,
+  customButton,
 }: {
   mutation: UseMutationResult<R, Error, T>;
   onSubmit: FormEventHandler<HTMLFormElement>;
   disabled?: boolean;
   name?: string;
+  customButton?: ComponentType;
 } & PropsWithChildren) {
+  const Button = customButton ?? "button";
   return (
     <StyledForm onSubmit={onSubmit}>
       {name && <h3>{name}</h3>}
       <div>{children}</div>
-      <button type="submit" disabled={disabled || mutation.isPending}>
+      <Button type="submit" disabled={disabled || mutation.isPending}>
         submit
-      </button>
+      </Button>
       {mutation.isError && <p>{mutation.error.message}</p>}
     </StyledForm>
   );
