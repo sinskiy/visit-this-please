@@ -25,6 +25,7 @@ export default function EditPlace({
     reset,
     setValue,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<EditPlaceSchema>({ resolver: zodResolver(editPlaceSchema) });
 
@@ -82,6 +83,7 @@ export default function EditPlace({
               error={errors.stateOrRegion}
               {...register("stateOrRegion")}
               defaultValue={place?.stateOrRegion}
+              disabled={!isCountrySelected || watch("noStateRegion")}
             />
             <InputField
               id="settlement"
@@ -89,6 +91,7 @@ export default function EditPlace({
               error={errors.settlement}
               {...register("settlement")}
               defaultValue={place?.settlement}
+              disabled={!watch("stateOrRegion") || watch("noSettlement")}
             />
             <InputField
               id="name"
@@ -96,6 +99,12 @@ export default function EditPlace({
               error={errors.name}
               {...register("name")}
               defaultValue={place?.name}
+              disabled={
+                (!watch("settlement") &&
+                  !watch("noSettlement") &&
+                  (!watch("stateOrRegion") || !watch("noStateRegion"))) ||
+                watch("omitName")
+              }
             />
             <label htmlFor="no-state-region">not in a state/region</label>
             <input
@@ -117,6 +126,7 @@ export default function EditPlace({
               error={errors.street}
               {...register("street")}
               defaultValue={place?.street}
+              disabled={!watch("name") && !watch("omitName")}
             />
             <InputField
               id="house"
@@ -124,6 +134,7 @@ export default function EditPlace({
               error={errors.house}
               {...register("house")}
               defaultValue={place?.house}
+              disabled={!watch("street")}
             />
             <label htmlFor="omit-name">
               rate street, house, region or country itself (omit name)
