@@ -9,7 +9,7 @@ import { UserContext } from "../user";
 import { Like, type Reply, Vote } from "../lib/votes";
 import Sort from "./SortOrFilter";
 import { usePlaceSort } from "../lib/sort";
-import { useSearchParams } from "react-router";
+import { useLocation, useSearchParams } from "react-router";
 import FetchUsername from "./FetchUsername";
 import InputField from "../ui/InputField";
 import CheckboxField from "../ui/CheckboxField";
@@ -393,10 +393,14 @@ function Reply({
   const { user } = useContext(UserContext);
   const isMyReply = user?.id === reply.userId;
 
+  const location = useLocation();
+
   const deleteReplyMutation = useDeleteReply(placeId, voteId, reply._id);
 
   return (
-    <Card $layer="high">
+    <Card
+      $layer={location.hash.includes(`reply-${reply._id}`) ? "highest" : "high"}
+    >
       <p id={`reply-${reply._id}`}>
         <b>{reply.text}</b> by <FetchUsername userId={reply.userId} />
       </p>
