@@ -91,6 +91,17 @@ export default function Comments({
   );
 }
 
+const Textarea = styled.textarea`
+  background-color: var(--surface-container-highest);
+  color: var(--on-surface);
+  border: none;
+  outline: 1px solid var(--outline);
+  border-radius: 4px;
+  &:focus {
+    outline: 2px solid var(--primary);
+  }
+`;
+
 function CommentForm({
   placeId,
   voteId,
@@ -121,13 +132,13 @@ function CommentForm({
       <label htmlFor="comment" className="sr-only">
         comment
       </label>
-      <textarea
+      <Textarea
         id="comment"
         cols={20}
         rows={4}
         {...register("text")}
         defaultValue={voteText}
-      ></textarea>
+      ></Textarea>
     </Form>
   );
 }
@@ -366,6 +377,10 @@ function useReply(
   return { mutation, onSubmit };
 }
 
+const Button = styled.button`
+  background-color: var(--surface-container-highest);
+`;
+
 function Reply({
   placeId,
   voteId,
@@ -383,7 +398,7 @@ function Reply({
   return (
     <Card $layer="high">
       <p id={`reply-${reply._id}`}>
-        {reply.text} by <FetchUsername userId={reply.userId} />
+        <b>{reply.text}</b> by <FetchUsername userId={reply.userId} />
       </p>
       <p>
         to{" "}
@@ -401,12 +416,12 @@ function Reply({
         )}
       </p>
       {isMyReply && (
-        <button
+        <Button
           disabled={deleteReplyMutation.isPending}
           onClick={() => deleteReplyMutation.mutate()}
         >
           delete
-        </button>
+        </Button>
       )}
       {deleteReplyMutation.isError && (
         <p>{deleteReplyMutation.error.message}</p>

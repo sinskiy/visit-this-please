@@ -23,6 +23,21 @@ const Label = styled.label`
   font-size: 0.875rem;
 `;
 
+const Input = styled.input`
+  background-color: var(--surface-container-highest);
+  color: var(--on-surface);
+  border: none;
+  outline: 1px solid var(--outline);
+  border-radius: 4px;
+  &::placeholder {
+    color: var(--on-surface);
+    opacity: 0.5;
+  }
+  &:focus {
+    outline: 2px solid var(--primary);
+  }
+`;
+
 export default function InputField({
   id,
   name = id,
@@ -37,7 +52,7 @@ export default function InputField({
       <Label htmlFor={id} className={hideLabel ? "sr-only" : ""}>
         {label}
       </Label>
-      <input type={type} id={id} name={name} {...props} />
+      <Input type={type} id={id} name={name} {...props} />
       <p>{error?.message}</p>
     </>
   );
