@@ -11,6 +11,11 @@ import { createPortal } from "react-dom";
 import editPlaceSchema, { EditPlaceSchema } from "../types/editPlaceSchema";
 import { Place } from "../lib/places";
 import CheckboxField from "../ui/CheckboxField";
+import styled from "styled-components";
+
+const DialogForm = styled.form`
+  margin-top: 2rem;
+`;
 
 export default function EditPlace({
   isCountrySelectedDefault = false,
@@ -61,10 +66,16 @@ export default function EditPlace({
                 ? handleSubmit(onAddPlace)
                 : handleSubmit(onEditPlace)
             }
+            name={place === undefined ? "add place" : "edit place"}
           >
             {/* disable inputs according to switches and empty inputs */}
             <InputFieldWithSelect
               id="country"
+              label={
+                <>
+                  country<span className="error-text">*</span>
+                </>
+              }
               type="text"
               values={COUNTRIES}
               error={errors.country}
@@ -107,20 +118,22 @@ export default function EditPlace({
                 watch("omitName")
               }
             />
-            <CheckboxField
-              type="checkbox"
-              id="no-state-region"
-              label="not in a state/region"
-              {...register("noStateRegion")}
-              defaultChecked={place && !place.stateOrRegion}
-            />
-            <CheckboxField
-              type="checkbox"
-              id="no-settlement"
-              label="not in a settlement"
-              {...register("noSettlement")}
-              defaultChecked={place && !place.settlement}
-            />
+            <fieldset>
+              <CheckboxField
+                type="checkbox"
+                id="no-state-region"
+                label="not in a state/region"
+                {...register("noStateRegion")}
+                defaultChecked={place && !place.stateOrRegion}
+              />
+              <CheckboxField
+                type="checkbox"
+                id="no-settlement"
+                label="not in a settlement"
+                {...register("noSettlement")}
+                defaultChecked={place && !place.settlement}
+              />
+            </fieldset>
             <InputField
               id="street"
               type="text"
@@ -144,11 +157,13 @@ export default function EditPlace({
               {...register("omitName")}
               defaultChecked={place && !place.name}
             />
-            {!isCountrySelected && <p>select a country</p>}
+            {!isCountrySelected && (
+              <p className="error-text">select a country</p>
+            )}
           </Form>
-          <form method="dialog">
-            <button type="submit">cancel</button>
-          </form>
+          <DialogForm method="dialog">
+            <button type="submit">exit</button>
+          </DialogForm>
         </dialog>,
         document.body
       )}

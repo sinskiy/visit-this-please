@@ -42,7 +42,27 @@ select {
   width: fit-content;
 }
 
+fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+:disabled {
+  opacity: 0.5;
+}
+
+dialog {
+  border: none;
+  background-color: var(--surface-container);
+  color: var(--on-surface);
+}
+
 .primary {
   background-color: var(--primary);
   color: var(--on-primary);
+}
+
+.error-text {
+  color: var(--error);
 }

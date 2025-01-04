@@ -28,7 +28,7 @@ export default function SignUp() {
   }, [user]);
 
   return (
-    <Form mutation={mutation} onSubmit={handleSubmit(onSignUp)}>
+    <Form mutation={mutation} onSubmit={handleSubmit(onSignUp)} name="sign up">
       <InputField
         id="username"
         type="text"

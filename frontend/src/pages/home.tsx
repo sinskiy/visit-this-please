@@ -159,7 +159,7 @@ export default function Home() {
 
 const SearchForm = styled.form`
   display: flex;
-  gap: 0.25rem;
+  gap: 4px;
 `;
 
 function Search({ setSearch }: { setSearch: (search?: string) => void }) {
@@ -186,7 +186,7 @@ function Search({ setSearch }: { setSearch: (search?: string) => void }) {
 
 const PaginationWrapper = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 `;
 
 function Pagination({

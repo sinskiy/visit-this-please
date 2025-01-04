@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
+  ReactNode,
   useMemo,
 } from "react";
 import InputField from "./InputField";
@@ -13,6 +14,7 @@ interface InputFieldWithSelectProps
   type: HTMLInputTypeAttribute;
   // TODO: dynamic schema
   id: keyof EditPlaceSchema;
+  label?: ReactNode;
   values: readonly string[];
   search: string;
   setSearch: (search: string) => void;
@@ -26,6 +28,7 @@ interface InputFieldWithSelectProps
 let timeout: NodeJS.Timeout;
 export default function InputFieldWithSelect({
   id,
+  label = id,
   values,
   search,
   setSearch,
@@ -59,6 +62,7 @@ export default function InputFieldWithSelect({
     <>
       <InputField
         id={id}
+        label={label}
         error={error}
         {...register(id, { onChange: handleChange })}
         {...props}

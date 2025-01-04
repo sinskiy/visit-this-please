@@ -11,8 +11,8 @@ import CheckboxField from "../ui/CheckboxField";
 
 const ManagePlace = styled.div`
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 16px;
 `;
 
 export default function Place({
@@ -90,7 +90,7 @@ function useDeletePlace() {
 }
 
 const StyledVotes = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 `;
 
 function Votes({

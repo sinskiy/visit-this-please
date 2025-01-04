@@ -24,17 +24,17 @@ const SORT_OPTIONS = [
 ];
 
 const StyledComments = styled.div`
-  margin-top: 3rem;
+  margin-top: 48px;
 `;
 
 const CommentList = styled.ul`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
 `;
 
 const StyledSort = styled(Sort)`
-  margin-top: 2rem;
+  margin-top: 32px;
 `;
 
 export default function Comments({
@@ -164,16 +164,16 @@ type CommentScheme = inferType<typeof commentScheme>;
 
 const CommentButtonsWrapper = styled.div`
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 16px;
 `;
 
 const ReplyList = styled.ul`
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  margin-top: 16px;
+  margin-bottom: 32px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 16px;
 `;
 
 function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
@@ -238,7 +238,7 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
               <i>no replies</i>
             </p>
           )}
-          <ReplyForm placeId={placeId} voteId={vote._id} />
+          {user && <ReplyForm placeId={placeId} voteId={vote._id} />}
         </>
       )}
     </Card>

@@ -1,10 +1,15 @@
-import { HTMLInputTypeAttribute, InputHTMLAttributes, RefObject } from "react";
+import {
+  HTMLInputTypeAttribute,
+  InputHTMLAttributes,
+  ReactNode,
+  RefObject,
+} from "react";
 import { FieldError, RefCallBack } from "react-hook-form";
 import styled from "styled-components";
 
 interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
-  label?: string;
+  label?: ReactNode;
   type: HTMLInputTypeAttribute;
   error: FieldError | undefined;
   hideLabel?: boolean;
@@ -13,7 +18,9 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Label = styled.label`
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px;
+  color: var(--on-surface-variant);
+  font-size: 0.875rem;
 `;
 
 export default function InputField({
