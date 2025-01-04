@@ -2,6 +2,11 @@ import { useContext, useState } from "react";
 import { UserContext } from "../user";
 import { useQuery } from "@tanstack/react-query";
 import { queryApi } from "../lib/fetch";
+import styled from "styled-components";
+
+const Button = styled.button`
+  margin-left: 1rem;
+`;
 
 export default function FetchUsername({ userId }: { userId: string }) {
   const { user } = useContext(UserContext);
@@ -21,14 +26,14 @@ export default function FetchUsername({ userId }: { userId: string }) {
         fetchUsernameQuery.data?.username ?? userId
       )}
       {!isMine && (
-        <button
+        <Button
           onClick={() => setDoFetchUsername(true)}
           disabled={
             fetchUsernameQuery.data && "username" in fetchUsernameQuery.data
           }
         >
           fetch username
-        </button>
+        </Button>
       )}
     </>
   );

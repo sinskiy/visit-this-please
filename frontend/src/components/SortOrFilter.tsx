@@ -1,14 +1,19 @@
+import { SelectHTMLAttributes } from "react";
+
+interface SortProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  types: string[];
+  value: string;
+  setValue: (type: string) => void;
+  isSort: boolean;
+}
+
 export default function Sort({
   types,
   value,
   setValue,
   isSort,
-}: {
-  types: string[];
-  value: string;
-  setValue: (type: string) => void;
-  isSort: boolean;
-}) {
+  ...props
+}: SortProps) {
   return (
     <select
       name={isSort ? "sort" : "filter"}
@@ -17,6 +22,7 @@ export default function Sort({
       onChange={(e) => {
         setValue(e.currentTarget.value);
       }}
+      {...props}
     >
       {types.map((type) => (
         <option key={type} value={type}>

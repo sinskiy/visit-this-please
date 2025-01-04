@@ -11,6 +11,10 @@ import Sort from "./SortOrFilter";
 import { usePlaceSort } from "../lib/sort";
 import { useSearchParams } from "react-router";
 import FetchUsername from "./FetchUsername";
+import InputField from "../ui/InputField";
+import CheckboxField from "../ui/CheckboxField";
+import styled from "styled-components";
+import Card from "../ui/Card";
 
 const SORT_OPTIONS = [
   "likes",
@@ -18,6 +22,20 @@ const SORT_OPTIONS = [
   "upvotes-first",
   "downvotes-first",
 ];
+
+const StyledComments = styled.div`
+  margin-top: 3rem;
+`;
+
+const CommentList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const StyledSort = styled(Sort)`
+  margin-top: 2rem;
+`;
 
 export default function Comments({
   placeId,
@@ -40,23 +58,35 @@ export default function Comments({
     setParams(params);
   }
 
+  const votesWithText = votes.filter((vote) => vote.text);
+
   return (
-    <>
+    <StyledComments>
+      <h3>Comments</h3>
       {user && (
         <CommentForm placeId={placeId} voteId={voteId} voteText={voteText} />
       )}
-      <Sort types={SORT_OPTIONS} sort={sort} setSort={setSort} />
-      <ul>
-        {votes.map(
-          (vote) =>
-            vote.text && (
-              <li key={vote.userId}>
-                <Comment placeId={placeId} vote={vote} />
-              </li>
-            )
-        )}
-      </ul>
-    </>
+      <StyledSort
+        disabled={votesWithText.length <= 1}
+        types={SORT_OPTIONS}
+        value={sort}
+        setValue={setSort}
+        isSort
+      />
+      {votesWithText.length > 0 ? (
+        <CommentList role="list">
+          {votesWithText.map((vote) => (
+            <li key={vote.userId}>
+              <Comment placeId={placeId} vote={vote} />
+            </li>
+          ))}
+        </CommentList>
+      ) : (
+        <p>
+          <i>no comments</i>
+        </p>
+      )}
+    </StyledComments>
   );
 }
 
@@ -87,10 +117,13 @@ function CommentForm({
       onSubmit={handleSubmit(onSubmit)}
       disabled={!voteId}
     >
+      <label htmlFor="comment" className="sr-only">
+        comment
+      </label>
       <textarea
         id="comment"
-        cols={30}
-        rows={5}
+        cols={20}
+        rows={4}
         {...register("text")}
         defaultValue={voteText}
       ></textarea>
@@ -129,6 +162,20 @@ function useComment(id: string, voteId?: string) {
 const commentScheme = object({ text: string().min(1) });
 type CommentScheme = inferType<typeof commentScheme>;
 
+const CommentButtonsWrapper = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const ReplyList = styled.ul`
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
 function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
   const { user } = useContext(UserContext);
   const isMyComment = user?.id === vote.userId;
@@ -140,52 +187,61 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
   const [showReplies, setShowReplies] = useState(false);
 
   return (
-    <>
-      {vote.text} by <FetchUsername userId={vote.userId} />
+    <Card>
+      <p>
+        <b>{vote.text}</b> by <FetchUsername userId={vote.userId} />
+      </p>
       <p id={`comment-${vote._id}`}>
         {vote.likes.length} like{vote.likes.length !== 1 && "s"}
       </p>
-      {user && (
-        <button
-          disabled={likeMutation.isPending}
-          onClick={() => likeMutation.mutate()}
-        >
-          {isLiked ? "remove" : "add"} like
-        </button>
-      )}
-      {isMyComment && (
-        <button
-          disabled={deleteCommentMutation.isPending}
-          onClick={() => deleteCommentMutation.mutate()}
-        >
-          delete
-        </button>
-      )}
+      <CommentButtonsWrapper>
+        {user && (
+          <button
+            disabled={likeMutation.isPending}
+            onClick={() => likeMutation.mutate()}
+          >
+            {isLiked ? "remove" : "add"} like
+          </button>
+        )}
+        {isMyComment && (
+          <button
+            disabled={deleteCommentMutation.isPending}
+            onClick={() => deleteCommentMutation.mutate()}
+          >
+            delete
+          </button>
+        )}
+      </CommentButtonsWrapper>
       {deleteCommentMutation.isError && (
         <p>{deleteCommentMutation.error.message}</p>
       )}
       {likeMutation.isError && <p>{likeMutation.error.message}</p>}
-      <input
+      <CheckboxField
         type="checkbox"
-        name="show-replies"
-        id="show-replies"
+        id={`show-replies-${vote._id}`}
+        label="show replies"
         checked={showReplies}
         onChange={(e) => setShowReplies(e.currentTarget.checked)}
       />
-      <label htmlFor="show-replies">show replies</label>
       {showReplies && (
         <>
-          <ul>
-            {vote.replies.map((reply) => (
-              <li key={reply._id}>
-                <Reply placeId={placeId} reply={reply} voteId={vote._id} />
-              </li>
-            ))}
-          </ul>
+          {vote.replies.length > 0 ? (
+            <ReplyList role="list">
+              {vote.replies.map((reply) => (
+                <li key={reply._id}>
+                  <Reply placeId={placeId} reply={reply} voteId={vote._id} />
+                </li>
+              ))}
+            </ReplyList>
+          ) : (
+            <p>
+              <i>no replies</i>
+            </p>
+          )}
           <ReplyForm placeId={placeId} voteId={vote._id} />
         </>
       )}
-    </>
+    </Card>
   );
 }
 
@@ -260,7 +316,12 @@ function ReplyForm({
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)} mutation={mutation}>
-      <input type="text" id="reply" {...register("text")} />
+      <InputField
+        type="text"
+        id="reply"
+        {...register("text")}
+        error={undefined}
+      />
     </Form>
   );
 }
@@ -319,7 +380,7 @@ function Reply({
   const deleteReplyMutation = useDeleteReply(placeId, voteId, reply._id);
 
   return (
-    <>
+    <Card $layer="high">
       <p id={`reply-${reply._id}`}>
         {reply.text} by <FetchUsername userId={reply.userId} />
       </p>
@@ -349,7 +410,7 @@ function Reply({
       {deleteReplyMutation.isError && (
         <p>{deleteReplyMutation.error.message}</p>
       )}
-    </>
+    </Card>
   );
 }
 

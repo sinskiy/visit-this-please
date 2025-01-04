@@ -1,3 +1,48 @@
+@postcss-material-colors (primary: #ffffff, variant: content);
+
 html {
   color-scheme: dark light;
+  accent-color: var(--primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+ul[role="list"] {
+  list-style-type: none;
+  padding: 0;
+}
+
+body {
+  margin: 32px auto;
+  max-width: 720px;
+  background-color: var(--background);
+  color: var(--on-background);
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.sr-only {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+button,
+input,
+textarea,
+select {
+  padding: 4px 20px;
+  font: inherit;
+  min-width: 0;
+  width: fit-content;
+}
+
+.primary {
+  background-color: var(--primary);
+  color: var(--on-primary);
 }

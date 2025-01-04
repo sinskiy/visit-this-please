@@ -6,6 +6,14 @@ import Comments from "./comments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryApi } from "../lib/fetch";
 import EditPlace from "./EditPlace";
+import styled from "styled-components";
+import CheckboxField from "../ui/CheckboxField";
+
+const ManagePlace = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
 
 export default function Place({
   place,
@@ -24,11 +32,11 @@ export default function Place({
 
   return (
     <>
-      <p>{getFormattedPlace(place)}</p>
+      <h2>{getFormattedPlace(place)}</h2>
       {isMine &&
         (place.votesLength === 0 ||
           (place.votesLength === 1 && place.voted !== undefined)) && (
-          <>
+          <ManagePlace>
             <button onClick={() => deletePlace(place._id)}>delete</button>
             <button onClick={() => dialogRef.current?.showModal()}>edit</button>
             <EditPlace
@@ -36,7 +44,7 @@ export default function Place({
               place={place}
               dialogRef={dialogRef}
             />
-          </>
+          </ManagePlace>
         )}
       {isDeleting ? (
         <p>deleting...</p>
@@ -81,6 +89,10 @@ function useDeletePlace() {
   return { isDeleting, isDeleteError, deleteError, deletePlace };
 }
 
+const StyledVotes = styled.div`
+  margin-bottom: 1rem;
+`;
+
 function Votes({
   placeId,
   down,
@@ -96,25 +108,23 @@ function Votes({
   const { user } = useContext(UserContext);
 
   return (
-    <>
-      <label htmlFor={`vote-${placeId}-up`}>up {up}</label>
-      <input
+    <StyledVotes>
+      <CheckboxField
         type="radio"
-        name={`vote-${placeId}`}
-        id={`vote-${placeId}-up`}
         onChange={() => mutate({ type: "UP", id: placeId })}
         disabled={!user || isVoteLoading}
         checked={voted === "UP"}
+        id={`vote-${placeId}-up`}
+        label={`up ${up}`}
       />
-      <label htmlFor={`vote-${placeId}-down`}>down {down}</label>
-      <input
+      <CheckboxField
         type="radio"
-        name={`vote-${placeId}`}
-        id={`vote-${placeId}-down`}
         onChange={() => mutate({ type: "DOWN", id: placeId })}
         disabled={!user || isVoteLoading}
         checked={voted === "DOWN"}
+        id={`vote-${placeId}-down`}
+        label={`down ${down}`}
       />
-    </>
+    </StyledVotes>
   );
 }

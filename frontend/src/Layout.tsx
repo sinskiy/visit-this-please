@@ -3,6 +3,13 @@ import { NavLink, Outlet } from "react-router";
 import { UserContext } from "./user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "./lib/fetch";
+import styled from "styled-components";
+
+const Header = styled.header`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+`;
 
 export default function Layout() {
   const { user, setUser, isLoading, isError, error } = useContext(UserContext);
@@ -18,7 +25,7 @@ export default function Layout() {
 
   return (
     <>
-      <header>
+      <Header>
         <NavLink to="/">home</NavLink>
         {!user && !isLoading && (
           <>
@@ -31,7 +38,7 @@ export default function Layout() {
             log out
           </button>
         )}
-      </header>
+      </Header>
       <main>
         {isError && error!.message !== "Unauthorized" && (
           <p>{error!.message}</p>
