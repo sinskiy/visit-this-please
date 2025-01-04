@@ -107,15 +107,21 @@ export default function EditPlace({
             />
             <InputField
               id="name"
+              label={
+                <>
+                  name<span className="error-text">*</span>
+                </>
+              }
               type="text"
               error={errors.name}
               {...register("name")}
               defaultValue={place?.name}
               disabled={
-                (!watch("settlement") &&
-                  !watch("noSettlement") &&
-                  (!watch("stateOrRegion") || !watch("noStateRegion"))) ||
-                watch("omitName")
+                watch("omitName") ||
+                (!watch("settlement") && !watch("noSettlement")) ||
+                (watch("noSettlement") &&
+                  !watch("stateOrRegion") &&
+                  !watch("noStateRegion"))
               }
             />
             <fieldset>
@@ -132,6 +138,7 @@ export default function EditPlace({
                 label="not in a settlement"
                 {...register("noSettlement")}
                 defaultChecked={place && !place.settlement}
+                disabled={!watch("stateOrRegion") && !watch("noStateRegion")}
               />
             </fieldset>
             <InputField
@@ -140,7 +147,10 @@ export default function EditPlace({
               error={errors.street}
               {...register("street")}
               defaultValue={place?.street}
-              disabled={!watch("name") && !watch("omitName")}
+              disabled={
+                (!watch("name") && !watch("omitName")) ||
+                (watch("omitName") && !watch("settlement"))
+              }
             />
             <InputField
               id="house"
