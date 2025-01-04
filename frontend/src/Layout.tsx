@@ -8,7 +8,12 @@ import styled from "styled-components";
 const Header = styled.header`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
+`;
+
+const Nav = styled.div`
+  display: flex;
+  gap: 8px;
 `;
 
 export default function Layout() {
@@ -28,10 +33,10 @@ export default function Layout() {
       <Header>
         <NavLink to="/">home</NavLink>
         {!user && !isLoading && (
-          <>
+          <Nav>
             <NavLink to="/log-in">log in</NavLink>
             <NavLink to="/sign-up">sign up</NavLink>
-          </>
+          </Nav>
         )}
         {user && (
           <button onClick={() => mutate()} disabled={isPending}>

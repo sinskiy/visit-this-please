@@ -11,7 +11,7 @@ interface CheckboxFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Field = styled.div`
   display: flex;
-  gap: 0.25rem;
+  gap: 4px;
 `;
 
 export default function CheckboxField({

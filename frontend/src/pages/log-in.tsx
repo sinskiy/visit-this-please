@@ -28,7 +28,7 @@ export default function LogIn() {
   }, [user]);
 
   return (
-    <Form mutation={mutation} onSubmit={handleSubmit(onLogIn)}>
+    <Form mutation={mutation} onSubmit={handleSubmit(onLogIn)} name="log in">
       <InputField
         id="username"
         type="text"

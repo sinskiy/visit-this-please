@@ -5,7 +5,7 @@ import { queryApi } from "../lib/fetch";
 import styled from "styled-components";
 
 const Button = styled.button`
-  margin-left: 1rem;
+  margin-left: 16px;
 `;
 
 export default function FetchUsername({ userId }: { userId: string }) {
