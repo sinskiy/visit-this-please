@@ -8,6 +8,9 @@ import { Link, useSearchParams } from "react-router";
 import { useVote } from "../lib/votes";
 import Place from "../components/Place";
 import Sort from "../components/SortOrFilter";
+import InputField from "../ui/InputField";
+import styled from "styled-components";
+import Card from "../ui/Card";
 const Filter = Sort;
 
 const PAGE_LENGTH = 5;
@@ -25,6 +28,19 @@ const SORT_OPTIONS = [
   "comments",
 ];
 const FILTER_OPTIONS = ["none", "voted-by-me", "commented-by-me"];
+
+const OptionsWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+`;
+
+const Places = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
 export default function Home() {
   const queryClient = useQueryClient();
   const { user } = useContext(UserContext);
@@ -85,72 +101,93 @@ export default function Home() {
 
   return (
     <>
-      <p>hello, {user?.username ?? "world"}</p>
+      <Search setSearch={setSearch} />
       <h1>places</h1>
       {user && (
         <button onClick={() => dialogRef.current?.showModal()}>
           add place
         </button>
       )}
-      <Search setSearch={setSearch} />
-      <Sort types={SORT_OPTIONS} value={sort} setValue={setSort} isSort />
-      <Filter
-        types={FILTER_OPTIONS}
-        value={filter}
-        setValue={setFilter}
-        isSort={false}
-      />
-      {/* TODO: better loading (skeleton) */}
-      {isLoading === true ? (
-        <p>loading...</p>
-      ) : isError || !data ? (
-        <p>{error?.message || "Unexpected error"}</p>
-      ) : data.length > 0 ? (
-        <ul>
-          {data!.map((place) => (
-            <li
-              key={place._id}
-              onFocus={() => prefetchPlace(place._id)}
-              onMouseEnter={() => prefetchPlace(place._id)}
-            >
-              <Place place={place} />
-              <Link to={`/${place._id}`}>comments</Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>no places</p>
-      )}
-      <Pagination
-        page={page}
-        setPrevPage={setPrevPage}
-        setNextPage={setNextPage}
-        lastPage={!data || data.length !== PAGE_LENGTH}
-      />
-      {isVoteLoading ? (
-        <p>voting...</p>
-      ) : (
-        isVoteError && <p>{voteError.message}</p>
-      )}
-      <EditPlace dialogRef={dialogRef} />
+      <section>
+        <OptionsWrapper>
+          <Sort types={SORT_OPTIONS} value={sort} setValue={setSort} isSort />
+          <Filter
+            types={FILTER_OPTIONS}
+            value={filter}
+            setValue={setFilter}
+            isSort={false}
+          />
+        </OptionsWrapper>
+        {/* TODO: better loading (skeleton) */}
+        {isLoading === true ? (
+          <p>loading...</p>
+        ) : isError || !data ? (
+          <p>{error?.message || "Unexpected error"}</p>
+        ) : data.length > 0 ? (
+          <Places role="list">
+            {data!.map((place) => (
+              <Card
+                as="li"
+                key={place._id}
+                onFocus={() => prefetchPlace(place._id)}
+                onMouseEnter={() => prefetchPlace(place._id)}
+              >
+                <Place place={place} />
+                <Link to={`/${place._id}`}>comments</Link>
+              </Card>
+            ))}
+          </Places>
+        ) : (
+          <p>no places</p>
+        )}
+        <Pagination
+          page={page}
+          setPrevPage={setPrevPage}
+          setNextPage={setNextPage}
+          lastPage={!data || data.length !== PAGE_LENGTH}
+        />
+        {isVoteLoading ? (
+          <p>voting...</p>
+        ) : (
+          isVoteError && <p>{voteError.message}</p>
+        )}
+        <EditPlace dialogRef={dialogRef} />
+      </section>
     </>
   );
 }
 
+const SearchForm = styled.form`
+  display: flex;
+  gap: 0.25rem;
+`;
+
 function Search({ setSearch }: { setSearch: (search?: string) => void }) {
   const searchRef = useRef<HTMLInputElement>(null);
   return (
-    <form
+    <SearchForm
       onSubmit={(e) => {
         e.preventDefault();
         setSearch(searchRef.current?.value);
       }}
     >
-      <input type="search" name="search" id="search" ref={searchRef} />
+      <InputField
+        id="search"
+        type="search"
+        error={undefined}
+        ref={searchRef}
+        placeholder="Search places"
+        hideLabel
+      />
       <button type="submit">submit</button>
-    </form>
+    </SearchForm>
   );
 }
+
+const PaginationWrapper = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
 
 function Pagination({
   page,
@@ -164,7 +201,7 @@ function Pagination({
   lastPage: boolean;
 }) {
   return (
-    <>
+    <PaginationWrapper>
       <button onClick={setPrevPage} disabled={page <= 1}>
         prev
       </button>
@@ -172,7 +209,7 @@ function Pagination({
       <button onClick={setNextPage} disabled={lastPage}>
         next
       </button>
-    </>
+    </PaginationWrapper>
   );
 }
 

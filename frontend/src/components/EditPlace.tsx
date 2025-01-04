@@ -10,6 +10,7 @@ import { mutateApi } from "../lib/fetch";
 import { createPortal } from "react-dom";
 import editPlaceSchema, { EditPlaceSchema } from "../types/editPlaceSchema";
 import { Place } from "../lib/places";
+import CheckboxField from "../ui/CheckboxField";
 
 export default function EditPlace({
   isCountrySelectedDefault = false,
@@ -106,17 +107,17 @@ export default function EditPlace({
                 watch("omitName")
               }
             />
-            <label htmlFor="no-state-region">not in a state/region</label>
-            <input
+            <CheckboxField
               type="checkbox"
               id="no-state-region"
+              label="not in a state/region"
               {...register("noStateRegion")}
               defaultChecked={place && !place.stateOrRegion}
             />
-            <label htmlFor="no-settlement">not in a settlement</label>
-            <input
+            <CheckboxField
               type="checkbox"
               id="no-settlement"
+              label="not in a settlement"
               {...register("noSettlement")}
               defaultChecked={place && !place.settlement}
             />
@@ -136,12 +137,10 @@ export default function EditPlace({
               defaultValue={place?.house}
               disabled={!watch("street")}
             />
-            <label htmlFor="omit-name">
-              rate street, house, region or country itself (omit name)
-            </label>
-            <input
+            <CheckboxField
               type="checkbox"
               id="omit-name"
+              label="rate street, house, region or country itself (omit name)"
               {...register("omitName")}
               defaultChecked={place && !place.name}
             />
