@@ -1,10 +1,9 @@
 import { useContext, useRef } from "react";
 import { UserContext } from "../user";
-import { createPortal } from "react-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryApi } from "../lib/fetch";
 import { Place as PlaceI } from "../lib/places";
-import AddPlace from "../components/AddPlace";
+import EditPlace from "../components/EditPlace";
 import { Link, useSearchParams } from "react-router";
 import { useVote } from "../lib/votes";
 import Place from "../components/Place";
@@ -133,15 +132,7 @@ export default function Home() {
       ) : (
         isVoteError && <p>{voteError.message}</p>
       )}
-      {createPortal(
-        <dialog ref={dialogRef} id="add-place">
-          <AddPlace dialogRef={dialogRef} />
-          <form method="dialog">
-            <button type="submit">cancel</button>
-          </form>
-        </dialog>,
-        document.body
-      )}
+      <EditPlace dialogRef={dialogRef} />
     </>
   );
 }

@@ -192,6 +192,30 @@ router.delete("/:id", isUser, async (req, res) => {
 
   res.json({ status: "success" });
 });
+router.patch("/:id", isUser, async (req, res) => {
+  const parsedSchema = addPlaceSchema.safeParse(req.body);
+
+  if (!parsedSchema.success) {
+    throw new ErrorWithStatus("Incorrect data", 400);
+  }
+
+  const { id } = req.params;
+
+  const place = await Place.findById(id);
+  if (!place) {
+    throw new ErrorWithStatus("Place not found", 404);
+  }
+  if (
+    place.votes.length > 1 ||
+    (place.votes.length === 1 && place.votes[0]?.userId !== req.user?.id)
+  ) {
+    throw new ErrorWithStatus("You're not the author", 403);
+  }
+
+  await place.updateOne({ ...parsedSchema.data });
+
+  res.json({ status: "success" });
+});
 
 router.patch("/:id/votes", isUser, async (req, res) => {
   const { id } = req.params;

@@ -1,19 +1,26 @@
-import { ChangeEvent, useMemo } from "react";
+import {
+  ChangeEvent,
+  HTMLInputTypeAttribute,
+  InputHTMLAttributes,
+  useMemo,
+} from "react";
 import InputField from "./InputField";
 import { FieldError, UseFormRegister, UseFormSetValue } from "react-hook-form";
-import { AddPlaceSchema } from "../types/addPlaceSchema";
+import { EditPlaceSchema } from "../types/editPlaceSchema";
 
-interface InputFieldWithSelectProps {
+interface InputFieldWithSelectProps
+  extends InputHTMLAttributes<HTMLInputElement> {
+  type: HTMLInputTypeAttribute;
   // TODO: dynamic schema
-  id: keyof AddPlaceSchema;
+  id: keyof EditPlaceSchema;
   values: readonly string[];
   search: string;
   setSearch: (search: string) => void;
   isSelected: boolean;
   setIsSelected: (state: boolean) => void;
-  register: UseFormRegister<AddPlaceSchema>;
+  register: UseFormRegister<EditPlaceSchema>;
   error: FieldError | undefined;
-  setValue: UseFormSetValue<AddPlaceSchema>;
+  setValue: UseFormSetValue<EditPlaceSchema>;
 }
 
 let timeout: NodeJS.Timeout;
@@ -27,6 +34,7 @@ export default function InputFieldWithSelect({
   error,
   setValue,
   register,
+  ...props
 }: InputFieldWithSelectProps) {
   const result = useMemo(
     () =>
@@ -51,9 +59,9 @@ export default function InputFieldWithSelect({
     <>
       <InputField
         id={id}
-        type="text"
         error={error}
         {...register(id, { onChange: handleChange })}
+        {...props}
       />
       {search && (
         <ul>
