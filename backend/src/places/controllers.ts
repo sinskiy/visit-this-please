@@ -59,6 +59,6 @@ export function getPlaceWithVotes(
     down,
     userVote: extended ? userVote : undefined,
     votes: extended ? votes : undefined,
-    votesLength: extended ? undefined : votes.length,
+    votesLength: votes.length,
   };
 }

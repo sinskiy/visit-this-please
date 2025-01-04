@@ -27,7 +27,7 @@ export default function Place({
       <p>{getFormattedPlace(place)}</p>
       {isMine &&
         (place.votesLength === 0 ||
-          (place.votesLength === 1 && !place.voted)) && (
+          (place.votesLength === 1 && place.voted !== undefined)) && (
           <>
             <button onClick={() => deletePlace(place._id)}>delete</button>
             <button onClick={() => dialogRef.current?.showModal()}>edit</button>
