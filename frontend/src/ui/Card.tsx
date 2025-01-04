@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Card = styled.div<{ $layer?: string }>`
+const Card = styled.div<{ $layer?: string | false }>`
   background-color: ${(props) =>
     props.$layer
       ? `var(--surface-container-${props.$layer})`
