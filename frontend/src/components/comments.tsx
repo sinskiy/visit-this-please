@@ -387,7 +387,6 @@ function useReply(
 }
 
 const Button = styled.button`
-  background-color: var(--surface-container-highest);
   height: fit-content;
   align-self: center;
 `;
