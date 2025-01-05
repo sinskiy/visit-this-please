@@ -23,11 +23,12 @@ const Label = styled.label`
   font-size: 0.875rem;
 `;
 
-const Input = styled.input`
+const Input = styled.input<{ $isError: boolean }>`
   background-color: var(--surface-container-highest);
   color: var(--on-surface);
   border: none;
-  outline: 1px solid var(--outline);
+  outline: ${(props) =>
+    props.$isError ? "2px solid var(--error)" : "1px solid var(--outline)"};
   border-radius: 4px;
   &::placeholder {
     color: var(--on-surface);
@@ -52,8 +53,14 @@ export default function InputField({
       <Label htmlFor={id} className={hideLabel ? "sr-only" : ""}>
         {label}
       </Label>
-      <Input type={type} id={id} name={name} {...props} />
-      <p>{error?.message}</p>
+      <Input
+        $isError={!!error?.message}
+        type={type}
+        id={id}
+        name={name}
+        {...props}
+      />
+      <p className="error-text">{error?.message}</p>
     </>
   );
 }
