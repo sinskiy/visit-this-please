@@ -1,5 +1,5 @@
 import { getFormattedPlace, PlaceById, type Place } from "../lib/places";
-import { useContext, useRef } from "react";
+import { PropsWithChildren, useContext, useRef } from "react";
 import { UserContext } from "../user";
 import { useVote, VoteType } from "../lib/votes";
 import Comments from "./comments";
@@ -8,6 +8,7 @@ import { queryApi } from "../lib/fetch";
 import EditPlace from "./EditPlace";
 import styled from "styled-components";
 import CheckboxField from "../ui/CheckboxField";
+import IconButton from "../ui/IconButton";
 
 const ManagePlace = styled.div`
   display: flex;
@@ -15,13 +16,19 @@ const ManagePlace = styled.div`
   margin-bottom: 16px;
 `;
 
+const NameAndVotes = styled.div`
+  display: flex;
+  gap: 32px;
+`;
+
 export default function Place({
   place,
   comments = false,
+  children,
 }: {
   place: Place | PlaceById;
   comments?: boolean;
-}) {
+} & PropsWithChildren) {
   const { user } = useContext(UserContext);
   const isMine = "userId" in place && user?.id === place.userId;
 
@@ -32,12 +39,29 @@ export default function Place({
 
   return (
     <>
-      <h2>{getFormattedPlace(place)}</h2>
+      <NameAndVotes>
+        <Votes
+          placeId={place._id}
+          voted={place.voted}
+          up={place.up}
+          down={place.down}
+        />
+        <div>
+          <h2>{getFormattedPlace(place)}</h2>
+          {children}
+        </div>
+      </NameAndVotes>
       {isMine &&
         (place.votesLength === 0 ||
           (place.votesLength === 1 && place.voted !== undefined)) && (
           <ManagePlace>
-            <button onClick={() => deletePlace(place._id)}>delete</button>
+            <IconButton
+              onClick={() => deletePlace(place._id)}
+              aria-label="delete"
+              className="icon"
+            >
+              <img src="/delete.svg" alt="" />
+            </IconButton>
             <button onClick={() => dialogRef.current?.showModal()}>edit</button>
             <EditPlace
               isCountrySelectedDefault={true}
@@ -51,12 +75,6 @@ export default function Place({
       ) : (
         isDeleteError && <p>{deleteError!.message}</p>
       )}
-      <Votes
-        placeId={place._id}
-        voted={place.voted}
-        up={place.up}
-        down={place.down}
-      />
       {"votes" in place && comments && (
         <Comments
           placeId={place._id}
@@ -90,7 +108,17 @@ function useDeletePlace() {
 }
 
 const StyledVotes = styled.div`
-  margin-bottom: 16px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  width: fit-content;
+`;
+const GeneralVoteCount = styled.p`
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
 `;
 
 function Votes({
@@ -115,15 +143,34 @@ function Votes({
         disabled={!user || isVoteLoading}
         checked={voted === "UP"}
         id={`vote-${placeId}-up`}
-        label={`up ${up}`}
+        label={
+          voted === "UP" ? (
+            <img src="/up-filled.svg" alt="" />
+          ) : (
+            <img src="/up.svg" alt="" />
+          )
+        }
+        isCheckboxHidden
       />
+      <GeneralVoteCount>{up - down}</GeneralVoteCount>
       <CheckboxField
         type="radio"
         onChange={() => mutate({ type: "DOWN", id: placeId })}
         disabled={!user || isVoteLoading}
         checked={voted === "DOWN"}
         id={`vote-${placeId}-down`}
-        label={`down ${down}`}
+        label={
+          voted === "DOWN" ? (
+            <img
+              src="/up-filled.svg"
+              alt=""
+              style={{ transform: "rotate(180deg)" }}
+            />
+          ) : (
+            <img src="/up.svg" alt="" style={{ transform: "rotate(180deg)" }} />
+          )
+        }
+        isCheckboxHidden
       />
     </StyledVotes>
   );

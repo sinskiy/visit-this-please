@@ -15,6 +15,7 @@ import InputField from "../ui/InputField";
 import CheckboxField from "../ui/CheckboxField";
 import styled from "styled-components";
 import Card from "../ui/Card";
+import IconButton from "../ui/IconButton";
 
 const SORT_OPTIONS = [
   "likes",
@@ -181,11 +182,14 @@ const CommentButtonsWrapper = styled.div`
 `;
 
 const ReplyList = styled.ul`
-  margin-top: 16px;
   margin-bottom: 32px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+`;
+
+const ShowRepliesCheckbox = styled(CheckboxField)`
+  margin-bottom: 16px;
 `;
 
 function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
@@ -200,35 +204,35 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
 
   return (
     <Card>
-      <p>
-        <b>{vote.text}</b> by <FetchUsername userId={vote.userId} />
-      </p>
       <p id={`comment-${vote._id}`}>
-        {vote.likes.length} like{vote.likes.length !== 1 && "s"}
+        <b>{vote.text}</b> by <FetchUsername userId={vote.userId} />
       </p>
       <CommentButtonsWrapper>
         {user && (
-          <button
+          <IconButton
             disabled={likeMutation.isPending}
             onClick={() => likeMutation.mutate()}
+            aria-label={isLiked ? "remove like" : "add like"}
           >
-            {isLiked ? "remove" : "add"} like
-          </button>
+            <img src={isLiked ? "/like-filled.svg" : "/like.svg"} alt="" />
+            {vote.likes.length}
+          </IconButton>
         )}
         {isMyComment && (
-          <button
+          <IconButton
             disabled={deleteCommentMutation.isPending}
             onClick={() => deleteCommentMutation.mutate()}
+            aria-label="delete"
           >
-            delete
-          </button>
+            <img src="/delete.svg" alt="" />
+          </IconButton>
         )}
       </CommentButtonsWrapper>
       {deleteCommentMutation.isError && (
         <p>{deleteCommentMutation.error.message}</p>
       )}
       {likeMutation.isError && <p>{likeMutation.error.message}</p>}
-      <CheckboxField
+      <ShowRepliesCheckbox
         type="checkbox"
         id={`show-replies-${vote._id}`}
         label="show replies"
@@ -331,6 +335,7 @@ function ReplyForm({
       onSubmit={handleSubmit(onSubmit)}
       mutation={mutation}
       customButton={Button}
+      $row={true}
     >
       <InputField
         type="text"
@@ -383,10 +388,13 @@ function useReply(
 
 const Button = styled.button`
   background-color: var(--surface-container-highest);
+  height: fit-content;
+  align-self: center;
 `;
 
-const MarginBottomButton = styled(Button)`
-  margin-bottom: 1rem;
+const ReplyFirstRow = styled.div`
+  display: flex;
+  gap: 16px;
 `;
 
 function Reply({
@@ -409,32 +417,32 @@ function Reply({
     <Card
       $layer={location.hash.includes(`reply-${reply._id}`) ? "highest" : "high"}
     >
-      <p id={`reply-${reply._id}`}>
-        <b>{reply.text}</b> by <FetchUsername userId={reply.userId} />
-      </p>
-      <p>
-        to{" "}
-        <a
-          href={
-            reply.replyId ? `#reply-${reply.replyId}` : `#comment-${voteId}`
-          }
-        >
-          {reply.replyId ? "reply" : "root"}
-        </a>{" "}
-        {reply.replyUserId && (
-          <>
-            by <FetchUsername userId={reply.replyUserId} />
-          </>
+      <ReplyFirstRow>
+        <p id={`reply-${reply._id}`}>
+          <b>{reply.text}</b> by <FetchUsername userId={reply.userId} /> | to{" "}
+          <a
+            href={
+              reply.replyId ? `#reply-${reply.replyId}` : `#comment-${voteId}`
+            }
+          >
+            {reply.replyId ? "reply" : "root"}
+          </a>{" "}
+          {reply.replyUserId && (
+            <>
+              by <FetchUsername userId={reply.replyUserId} />
+            </>
+          )}
+        </p>
+        {isMyReply && (
+          <IconButton
+            disabled={deleteReplyMutation.isPending}
+            onClick={() => deleteReplyMutation.mutate()}
+            aria-label="delete"
+          >
+            <img src="/delete.svg" alt="" />
+          </IconButton>
         )}
-      </p>
-      {isMyReply && (
-        <MarginBottomButton
-          disabled={deleteReplyMutation.isPending}
-          onClick={() => deleteReplyMutation.mutate()}
-        >
-          delete
-        </MarginBottomButton>
-      )}
+      </ReplyFirstRow>
       {user && (
         <ReplyForm
           placeId={placeId}
