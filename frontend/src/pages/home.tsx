@@ -105,7 +105,10 @@ export default function Home() {
       <Search setSearch={setSearch} />
       <h1>places</h1>
       {user && (
-        <button onClick={() => dialogRef.current?.showModal()}>
+        <button
+          onClick={() => dialogRef.current?.showModal()}
+          className="primary"
+        >
           add place
         </button>
       )}

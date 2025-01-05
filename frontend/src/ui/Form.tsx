@@ -29,7 +29,11 @@ export default function Form<R, T>({
     <StyledForm onSubmit={onSubmit} $row={$row}>
       {name && <h3>{name}</h3>}
       <div>{children}</div>
-      <Button type="submit" disabled={disabled || mutation.isPending}>
+      <Button
+        type="submit"
+        disabled={disabled || mutation.isPending}
+        className="primary"
+      >
         submit
       </Button>
       {mutation.isError && <p>{mutation.error.message}</p>}
