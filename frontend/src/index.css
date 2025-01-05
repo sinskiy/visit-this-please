@@ -54,8 +54,14 @@ button {
 a {
   color: var(--primary);
   text-decoration: none;
+  padding: 0.25rem 1rem;
+  border-radius: 6px;
   &:hover {
     text-decoration: underline;
+  }
+  &.active {
+    background-color: var(--primary);
+    color: var(--on-primary);
   }
 }
 
