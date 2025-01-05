@@ -10,27 +10,6 @@ export default function Provider({ children }: PropsWithChildren) {
     query: { isLoading, isError, error },
   } = useUser();
 
-  useEffect(() => {
-    const hover = document.querySelectorAll("button");
-    for (const button of hover) {
-      button.addEventListener("touchstart", handleMobileHover);
-      button.addEventListener("touchend", handleMobileHover);
-    }
-
-    function handleMobileHover(e: TouchEvent) {
-      e.preventDefault();
-      const target = e.currentTarget as HTMLElement;
-      target.classList.toggle("hover");
-    }
-
-    return () => {
-      for (const button of hover) {
-        button.removeEventListener("touchstart", handleMobileHover);
-        button.removeEventListener("touchend", handleMobileHover);
-      }
-    };
-  }, []);
-
   return (
     <UserContext.Provider value={{ user, setUser, isLoading, isError, error }}>
       {children}
