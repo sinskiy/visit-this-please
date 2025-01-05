@@ -12,11 +12,6 @@ const Header = styled.header`
   margin-bottom: 32px;
 `;
 
-const Nav = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
 export default function Layout() {
   const { user, setUser, isLoading, isError, error } = useContext(UserContext);
 
@@ -33,20 +28,15 @@ export default function Layout() {
     <>
       <Header>
         <NavLink to="/">home</NavLink>
-        {!user && (
-          <Nav>
-            {!isLoading ? (
+        {!user &&
+          (!isLoading ? (
+            <nav>
               <NavLink to="/log-in">log in</NavLink>
-            ) : (
-              <Skeleton $width="48px" $height="16px" />
-            )}
-            {!isLoading ? (
               <NavLink to="/sign-up">sign up</NavLink>
-            ) : (
-              <Skeleton $width="48px" $height="16px" />
-            )}
-          </Nav>
-        )}
+            </nav>
+          ) : (
+            <Skeleton $width="96px" $height="16px" />
+          ))}
         {user && (
           <button onClick={() => mutate()} disabled={isPending}>
             log out
