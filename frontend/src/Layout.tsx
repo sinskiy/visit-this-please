@@ -12,6 +12,17 @@ const Header = styled.header`
   margin-bottom: 32px;
 `;
 
+const MyLink = styled(NavLink)`
+  padding: 0.25rem 1rem;
+  border-radius: 6px;
+  &.active {
+    background-color: var(--primary);
+    color: var(--on-primary);
+    display: flex;
+    place-items: center;
+  }
+`;
+
 export default function Layout() {
   const { user, setUser, isLoading, isError, error } = useContext(UserContext);
 
@@ -27,12 +38,12 @@ export default function Layout() {
   return (
     <>
       <Header>
-        <NavLink to="/">home</NavLink>
+        <MyLink to="/">home</MyLink>
         {!user &&
           (!isLoading ? (
             <nav>
-              <NavLink to="/log-in">log in</NavLink>
-              <NavLink to="/sign-up">sign up</NavLink>
+              <MyLink to="/log-in">log in</MyLink>
+              <MyLink to="/sign-up">sign up</MyLink>
             </nav>
           ) : (
             <Skeleton $width="96px" $height="16px" />

@@ -137,8 +137,9 @@ export default function Home() {
                 onFocus={() => prefetchPlace(place._id)}
                 onMouseEnter={() => prefetchPlace(place._id)}
               >
-                <Place place={place} />
-                <Link to={`/${place._id}`}>comments</Link>
+                <Place place={place}>
+                  <Link to={`/${place._id}`}>comments</Link>
+                </Place>
               </Card>
             ))}
           </Places>
