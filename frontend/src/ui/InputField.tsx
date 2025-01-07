@@ -24,6 +24,7 @@ const Label = styled.label`
 `;
 
 const Input = styled.input<{ $isError: boolean }>`
+  width: 100%;
   background-color: var(--surface-container-highest);
   color: var(--on-surface);
   border: none;

@@ -12,6 +12,10 @@ const Header = styled.header`
   margin-bottom: 32px;
 `;
 
+const Nav = styled.nav`
+  display: flex;
+`;
+
 const MyLink = styled(NavLink)`
   padding: 0.25rem 1rem;
   border-radius: 6px;
@@ -41,10 +45,10 @@ export default function Layout() {
         <MyLink to="/">home</MyLink>
         {!user &&
           (!isLoading ? (
-            <nav>
+            <Nav>
               <MyLink to="/log-in">log in</MyLink>
               <MyLink to="/sign-up">sign up</MyLink>
-            </nav>
+            </Nav>
           ) : (
             <Skeleton $width="96px" $height="16px" />
           ))}

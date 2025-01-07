@@ -12,6 +12,7 @@ import IconButton from "@/ui/IconButton";
 import Delete from "@/assets/delete.svg";
 import Up from "@/assets/up.svg";
 import UpFilled from "@/assets/up-filled.svg";
+import Edit from "@/assets/edit.svg";
 
 const ManagePlace = styled.div`
   display: flex;
@@ -65,7 +66,13 @@ export default function Place({
             >
               <img src={Delete} alt="" />
             </IconButton>
-            <button onClick={() => dialogRef.current?.showModal()}>edit</button>
+            <IconButton
+              onClick={() => dialogRef.current?.showModal()}
+              aria-label="edit"
+              className="icon"
+            >
+              <img src={Edit} alt="" />
+            </IconButton>
             <EditPlace
               isCountrySelectedDefault={true}
               place={place}
