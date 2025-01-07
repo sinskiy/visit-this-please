@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi } from "@/lib/fetch";
 import styled from "styled-components";
 import Skeleton from "@/ui/Skeleton";
+import Logo from "@/assets/logo.svg";
 
 const Header = styled.header`
   display: flex;
@@ -16,6 +17,14 @@ const Nav = styled.nav`
   display: flex;
 `;
 
+const LogoLink = styled(NavLink)`
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.5rem;
+  gap: 0.5rem;
+`;
+
 const MyLink = styled(NavLink)`
   padding: 0.25rem 1rem;
   border-radius: 6px;
@@ -25,6 +34,10 @@ const MyLink = styled(NavLink)`
     display: flex;
     place-items: center;
   }
+`;
+
+const Button = styled.button`
+  height: fit-content;
 `;
 
 export default function Layout() {
@@ -42,7 +55,10 @@ export default function Layout() {
   return (
     <>
       <Header>
-        <MyLink to="/">home</MyLink>
+        <LogoLink to="/">
+          <img src={Logo} width={96} height={48} alt="" />
+          visit this, please!
+        </LogoLink>
         {!user &&
           (!isLoading ? (
             <Nav>
@@ -53,9 +69,9 @@ export default function Layout() {
             <Skeleton $width="96px" $height="16px" />
           ))}
         {user && (
-          <button onClick={() => mutate()} disabled={isPending}>
+          <Button onClick={() => mutate()} disabled={isPending}>
             log out
-          </button>
+          </Button>
         )}
       </Header>
       <main>
