@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "test": "vitest",
+    "start": "DEVELOPMENT=1 webpack serve",
+    "build": "webpack",
+    "analyze": "ANALYZE=1 webpack",
+    "test": "jest",
     "e2e": "playwright test"
   },
   "dependencies": {
@@ -21,14 +21,33 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.26.0",
     "@playwright/test": "^1.49.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
+    "@types/dotenv-webpack": "^7.0.8",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@types/webpack-bundle-analyzer": "^4.7.0",
+    "babel-loader": "^9.2.1",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "dotenv-webpack": "^8.1.0",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "html-webpack-plugin": "^5.6.3",
+    "jest": "^29.7.0",
+    "mini-css-extract-plugin": "^2.9.2",
+    "postcss-load-config": "^6.0.1",
+    "postcss-loader": "^8.1.1",
     "postcss-material-colors": "^0.6.2",
+    "react-refresh": "^0.16.0",
     "typescript": "~5.6.2",
-    "vite": "^6.0.3",
-    "vitest": "^2.1.8"
+    "webpack": "^5.97.1",
+    "webpack-bundle-analyzer": "^4.10.2",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0"
   }
 }

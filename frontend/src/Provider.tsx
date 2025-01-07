@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { queryApi } from "./lib/fetch";
+import { queryApi } from "@/lib/fetch";
 import { PropsWithChildren, useEffect, useState } from "react";
-import { User, UserContext } from "./user";
+import { User, UserContext } from "@/user";
 
 export default function Provider({ children }: PropsWithChildren) {
   const {

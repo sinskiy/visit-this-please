@@ -1,17 +1,17 @@
 import { useContext, useRef } from "react";
-import { UserContext } from "../user";
+import { UserContext } from "@/user";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryApi } from "../lib/fetch";
-import { Place as PlaceI } from "../lib/places";
-import EditPlace from "../components/EditPlace";
+import { queryApi } from "@/lib/fetch";
+import { Place as PlaceI } from "@/lib/places";
+import EditPlace from "@/components/EditPlace";
 import { Link, useSearchParams } from "react-router";
-import { useVote } from "../lib/votes";
-import Place from "../components/Place";
-import Sort from "../components/SortOrFilter";
-import InputField from "../ui/InputField";
+import { useVote } from "@/lib/votes";
+import Place from "@/components/Place";
+import Sort from "@/components/SortOrFilter";
+import InputField from "@/ui/InputField";
 import styled from "styled-components";
-import Card from "../ui/Card";
-import Skeleton from "../ui/Skeleton";
+import Card from "@/ui/Card";
+import Skeleton from "@/ui/Skeleton";
 const Filter = Sort;
 
 const PAGE_LENGTH = 5;

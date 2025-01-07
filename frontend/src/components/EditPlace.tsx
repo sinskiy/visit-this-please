@@ -1,16 +1,16 @@
-import Form from "../ui/Form";
+import Form from "@/ui/Form";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import InputField from "../ui/InputField";
-import { COUNTRIES } from "../lib/const";
-import InputFieldWithSelect from "../ui/InputFieldWithSelect";
+import InputField from "@/ui/InputField";
+import { COUNTRIES } from "@/lib/const";
+import InputFieldWithSelect from "@/ui/InputFieldWithSelect";
 import { RefObject, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi } from "../lib/fetch";
+import { mutateApi } from "@/lib/fetch";
 import { createPortal } from "react-dom";
-import editPlaceSchema, { EditPlaceSchema } from "../types/editPlaceSchema";
-import { Place } from "../lib/places";
-import CheckboxField from "../ui/CheckboxField";
+import editPlaceSchema, { EditPlaceSchema } from "@/types/editPlaceSchema";
+import { Place } from "@/lib/places";
+import CheckboxField from "@/ui/CheckboxField";
 import styled from "styled-components";
 
 const DialogForm = styled.form`

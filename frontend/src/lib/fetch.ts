@@ -1,7 +1,5 @@
-import env from "./env";
-
 export async function queryApi(path: string, options?: RequestInit) {
-  const response = await fetch(env.VITE_API_URL + path, options);
+  const response = await fetch(process.env.API_URL + path, options);
 
   // to update user to null on log out
   if (!response.ok) {
