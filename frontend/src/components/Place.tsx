@@ -2,7 +2,7 @@ import { getFormattedPlace, PlaceById, type Place } from "@/lib/places";
 import { PropsWithChildren, useContext, useRef } from "react";
 import { UserContext } from "@/user";
 import { useVote, VoteType } from "@/lib/votes";
-import Comments from "./comments";
+import Comments from "./Comments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryApi } from "@/lib/fetch";
 import EditPlace from "@/components/EditPlace";
