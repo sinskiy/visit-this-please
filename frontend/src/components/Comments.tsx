@@ -49,13 +49,14 @@ export default function Comments({
       {user && (
         <CommentForm placeId={placeId} voteId={voteId} voteText={voteText} />
       )}
-      <StyledSort
+      <Sort
         disabled={votesWithText.length <= 1}
         types={SORT_OPTIONS}
         value={sort}
         setValue={setSort}
         isSort
-        $isUser={!!user}
+        $isUser={user !== null}
+        $marginTop={user !== null ? "32px" : "0px"}
       />
       {votesWithText.length > 0 ? (
         <CommentList role="list">
@@ -82,10 +83,6 @@ const CommentList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const StyledSort = styled(Sort)`
-  margin-top: ${(props) => (props.$isUser ? "32px" : 0)};
 `;
 
 function CommentForm({
@@ -184,21 +181,19 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
         <b>{vote.text}</b> by <FetchUsername userId={vote.userId} />
       </p>
       <CommentButtonsWrapper>
-        {user && (
-          <IconButton
-            disabled={likeMutation.isPending}
-            onClick={() => likeMutation.mutate()}
-            aria-label={isLiked ? "remove like" : "add like"}
-          >
-            <img
-              src={isLiked ? LikeFilled : LikeIcon}
-              width={24}
-              height={24}
-              alt=""
-            />
-            {vote.likes.length}
-          </IconButton>
-        )}
+        <IconButton
+          disabled={likeMutation.isPending || user === null}
+          onClick={() => likeMutation.mutate()}
+          aria-label={isLiked ? "remove like" : "add like"}
+        >
+          <img
+            src={isLiked ? LikeFilled : LikeIcon}
+            width={24}
+            height={24}
+            alt=""
+          />
+          {vote.likes.length}
+        </IconButton>
         {isMyComment && (
           <IconButton
             disabled={deleteCommentMutation.isPending}
