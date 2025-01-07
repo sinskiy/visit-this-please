@@ -6,6 +6,7 @@ import {
 } from "react";
 import { FieldError, RefCallBack } from "react-hook-form";
 import styled from "styled-components";
+import Label from "./Label";
 
 interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string;
@@ -15,13 +16,6 @@ interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   hideLabel?: boolean;
   ref?: RefObject<HTMLInputElement> | RefCallBack;
 }
-
-const Label = styled.label`
-  display: block;
-  margin-bottom: 4px;
-  color: var(--on-surface-variant);
-  font-size: 0.875rem;
-`;
 
 const Input = styled.input<{ $isError: boolean }>`
   width: 100%;

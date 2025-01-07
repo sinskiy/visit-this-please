@@ -190,7 +190,12 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
             onClick={() => likeMutation.mutate()}
             aria-label={isLiked ? "remove like" : "add like"}
           >
-            <img src={isLiked ? LikeFilled : LikeIcon} alt="" />
+            <img
+              src={isLiked ? LikeFilled : LikeIcon}
+              width={24}
+              height={24}
+              alt=""
+            />
             {vote.likes.length}
           </IconButton>
         )}
@@ -200,7 +205,7 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
             onClick={() => deleteCommentMutation.mutate()}
             aria-label="delete"
           >
-            <img src={Delete} alt="" />
+            <img src={Delete} width={24} height={24} alt="" />
           </IconButton>
         )}
       </CommentButtonsWrapper>

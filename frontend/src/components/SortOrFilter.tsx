@@ -1,3 +1,4 @@
+import Label from "@/ui/Label";
 import { SelectHTMLAttributes } from "react";
 import styled from "styled-components";
 
@@ -8,6 +9,12 @@ interface SortProps extends SelectHTMLAttributes<HTMLSelectElement> {
   isSort: boolean;
   $isUser?: boolean;
 }
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
 
 const Select = styled.select`
   background-color: var(--surface-container-highest);
@@ -27,21 +34,25 @@ export default function Sort({
   isSort,
   ...props
 }: SortProps) {
+  const id = isSort ? "sort" : "filter";
   return (
-    <Select
-      name={isSort ? "sort" : "filter"}
-      id={isSort ? "sort" : "filter"}
-      defaultValue={value}
-      onChange={(e) => {
-        setValue(e.currentTarget.value);
-      }}
-      {...props}
-    >
-      {types.map((type) => (
-        <option key={type} value={type}>
-          {type.replace(/-/g, " ")}
-        </option>
-      ))}
-    </Select>
+    <Wrapper>
+      <Label htmlFor={id}>{id}</Label>
+      <Select
+        name={id}
+        id={id}
+        defaultValue={value}
+        onChange={(e) => {
+          setValue(e.currentTarget.value);
+        }}
+        {...props}
+      >
+        {types.map((type) => (
+          <option key={type} value={type}>
+            {type.replace(/-/g, " ")}
+          </option>
+        ))}
+      </Select>
+    </Wrapper>
   );
 }

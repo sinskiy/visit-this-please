@@ -183,7 +183,7 @@ function Reply({
             onClick={() => deleteReplyMutation.mutate()}
             aria-label="delete"
           >
-            <img src={Delete} alt="" />
+            <img src={Delete} width={24} height={24} alt="" />
           </IconButton>
         )}
       </ReplyFirstRow>
