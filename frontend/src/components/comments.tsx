@@ -1,10 +1,10 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useContext, useEffect, useMemo, useState } from "react";
 import Form from "@/ui/Form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { mutateApi, queryApi } from "@/lib/fetch";
-import { object, string, infer as inferType } from "zod";
+import { object, string, InferOutput, pipe, nonEmpty } from "valibot";
 import { UserContext } from "@/user";
 import type { Like, Reply, Vote } from "@/lib/votes";
 import Sort from "@/components/SortOrFilter";
@@ -118,7 +118,7 @@ function CommentForm({
   const { mutation, onSubmit } = useComment(placeId, voteId);
 
   const { register, handleSubmit, reset } = useForm<CommentScheme>({
-    resolver: zodResolver(commentScheme),
+    resolver: valibotResolver(commentScheme),
   });
 
   useEffect(() => {
@@ -175,8 +175,8 @@ function useComment(id: string, voteId?: string) {
   return { mutation, onSubmit };
 }
 
-const commentScheme = object({ text: string().min(1) });
-type CommentScheme = inferType<typeof commentScheme>;
+const commentScheme = object({ text: pipe(string(), nonEmpty()) });
+type CommentScheme = InferOutput<typeof commentScheme>;
 
 const CommentButtonsWrapper = styled.div`
   display: flex;
@@ -324,7 +324,7 @@ function ReplyForm({
     formState: { isSubmitSuccessful },
     reset,
   } = useForm<CommentScheme>({
-    resolver: zodResolver(commentScheme),
+    resolver: valibotResolver(commentScheme),
   });
 
   useEffect(() => {

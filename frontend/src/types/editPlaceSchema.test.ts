@@ -1,3 +1,4 @@
+import { parse } from "valibot";
 import editPlaceSchema from "./editPlaceSchema";
 
 const DEFAULT = {
@@ -7,7 +8,7 @@ const DEFAULT = {
 };
 test("country and name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       name: "sinskiy",
@@ -17,23 +18,23 @@ test("country and name", () => {
 
 test("incorrect country", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "country",
       name: "sinskiy",
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country", () => {
   expect(() =>
-    editPlaceSchema.parse({ ...DEFAULT, country: "Russia" })
-  ).toThrowError();
+    parse(editPlaceSchema, { ...DEFAULT, country: "Russia" })
+  ).toThrow();
 });
 
 test("country and omit name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       omitName: true,
@@ -43,7 +44,7 @@ test("country and omit name", () => {
 
 test("country, region and name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -55,7 +56,7 @@ test("country, region and name", () => {
 
 test("country, region and omit name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -67,7 +68,7 @@ test("country, region and omit name", () => {
 
 test("country, region, settlement and name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -81,7 +82,7 @@ test("country, region, settlement and name", () => {
 
 test("country, region, settlement and omit name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -95,19 +96,19 @@ test("country, region, settlement and omit name", () => {
 
 test("country, settlement and omit name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       settlement: "Tambov",
       noSettlement: false,
       omitName: true,
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, settlement, name and street", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -122,7 +123,7 @@ test("country, region, settlement, name and street", () => {
 
 test("country, region, settlement and street", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -131,12 +132,12 @@ test("country, region, settlement and street", () => {
       noSettlement: false,
       street: "International'naya",
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, settlement, street and omit name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -151,7 +152,7 @@ test("country, region, settlement, street and omit name", () => {
 
 test("country, region, settlement, street, house and name", () => {
   expect(
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -167,31 +168,31 @@ test("country, region, settlement, street, house and name", () => {
 
 test("country, street, house and name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       street: "International'naya",
       house: "21",
       name: "sinskiy",
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, street, house and omit name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       street: "International'naya",
       house: "21",
       omitName: true,
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, street, house and omit name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -200,12 +201,12 @@ test("country, region, street, house and omit name", () => {
       house: "21",
       omitName: true,
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, settlement, street, house and omit name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       settlement: "Tambov",
@@ -214,12 +215,12 @@ test("country, settlement, street, house and omit name", () => {
       house: "21",
       omitName: true,
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, settlement, house and name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -229,12 +230,12 @@ test("country, region, settlement, house and name", () => {
       house: "21",
       name: "sinskiy",
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, settlement, house and omit name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -244,12 +245,12 @@ test("country, region, settlement, house and omit name", () => {
       house: "21",
       omitName: true,
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, settlement, street and house", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",
@@ -259,12 +260,12 @@ test("country, region, settlement, street and house", () => {
       street: "International'naya",
       house: "21",
     })
-  ).toThrowError();
+  ).toThrow();
 });
 
 test("country, region, settlement, street, house and omit name", () => {
   expect(() =>
-    editPlaceSchema.parse({
+    parse(editPlaceSchema, {
       ...DEFAULT,
       country: "Russia",
       stateOrRegion: "Tambov oblast'",

@@ -1,6 +1,6 @@
 import Form from "@/ui/Form";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import InputField from "@/ui/InputField";
 import { COUNTRIES } from "@/lib/const";
 import InputFieldWithSelect from "@/ui/InputFieldWithSelect";
@@ -33,7 +33,7 @@ export default function EditPlace({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<EditPlaceSchema>({ resolver: zodResolver(editPlaceSchema) });
+  } = useForm<EditPlaceSchema>({ resolver: valibotResolver(editPlaceSchema) });
 
   function localOnSuccess() {
     reset();
