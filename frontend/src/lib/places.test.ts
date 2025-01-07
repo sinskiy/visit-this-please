@@ -1,4 +1,4 @@
-import { getFormattedPlace } from "./places";
+import { getFormattedPlace } from "@/lib/places";
 
 describe("getFormattedPlace", () => {
   test("gradual place is returned correctly", () => {
