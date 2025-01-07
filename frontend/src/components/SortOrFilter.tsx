@@ -7,13 +7,15 @@ interface SortProps extends SelectHTMLAttributes<HTMLSelectElement> {
   value: string;
   setValue: (type: string) => void;
   isSort: boolean;
+  $marginTop?: string;
   $isUser?: boolean;
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $marginTop: string | undefined }>`
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  ${(props) => props.$marginTop && `margin-top: ${props.$marginTop}`};
 `;
 
 const Select = styled.select`
@@ -32,11 +34,12 @@ export default function Sort({
   value,
   setValue,
   isSort,
+  $marginTop,
   ...props
 }: SortProps) {
   const id = isSort ? "sort" : "filter";
   return (
-    <Wrapper>
+    <Wrapper $marginTop={$marginTop}>
       <Label htmlFor={id}>{id}</Label>
       <Select
         name={id}

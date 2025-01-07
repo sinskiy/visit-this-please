@@ -14,7 +14,7 @@ import CheckboxField from "@/ui/CheckboxField";
 import styled from "styled-components";
 
 const DialogForm = styled.form`
-  margin-top: 2rem;
+  margin-top: 32px;
 `;
 
 export default function EditPlace({

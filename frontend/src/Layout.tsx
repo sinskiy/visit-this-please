@@ -15,6 +15,7 @@ const Header = styled.header`
 
 const Nav = styled.nav`
   display: flex;
+  align-items: center;
 `;
 
 const LogoLink = styled(NavLink)`
@@ -28,6 +29,7 @@ const LogoLink = styled(NavLink)`
 const MyLink = styled(NavLink)`
   padding: 0.25rem 1rem;
   border-radius: 6px;
+  height: fit-content;
   &.active {
     background-color: var(--primary);
     color: var(--on-primary);
