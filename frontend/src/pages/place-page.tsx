@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import Place from "../components/Place";
-import { queryApi } from "../lib/fetch";
+import Place from "@/components/Place";
+import { queryApi } from "@/lib/fetch";
 import { useParams } from "react-router";
-import { PlaceById } from "../lib/places";
-import { usePlaceSort } from "../lib/sort";
-import Skeleton from "../ui/Skeleton";
+import { PlaceById } from "@/lib/places";
+import { usePlaceSort } from "@/lib/sort";
+import Skeleton from "@/ui/Skeleton";
 
 export default function PlacePage() {
   const { id } = useParams();

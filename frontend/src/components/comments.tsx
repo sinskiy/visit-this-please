@@ -1,21 +1,24 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useContext, useEffect, useMemo, useState } from "react";
-import Form from "../ui/Form";
+import Form from "@/ui/Form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi, queryApi } from "../lib/fetch";
+import { mutateApi, queryApi } from "@/lib/fetch";
 import { object, string, infer as inferType } from "zod";
-import { UserContext } from "../user";
-import { Like, type Reply, Vote } from "../lib/votes";
-import Sort from "./SortOrFilter";
-import { usePlaceSort } from "../lib/sort";
+import { UserContext } from "@/user";
+import type { Like, Reply, Vote } from "@/lib/votes";
+import Sort from "@/components/SortOrFilter";
+import { usePlaceSort } from "@/lib/sort";
 import { useLocation, useSearchParams } from "react-router";
-import FetchUsername from "./FetchUsername";
-import InputField from "../ui/InputField";
-import CheckboxField from "../ui/CheckboxField";
+import FetchUsername from "@/components/FetchUsername";
+import InputField from "@/ui/InputField";
+import CheckboxField from "@/ui/CheckboxField";
 import styled from "styled-components";
-import Card from "../ui/Card";
-import IconButton from "../ui/IconButton";
+import Card from "@/ui/Card";
+import IconButton from "@/ui/IconButton";
+import LikeFilled from "@/assets/like-filled.svg";
+import LikeIcon from "@/assets/like.svg";
+import Delete from "@/assets/delete.svg";
 
 const SORT_OPTIONS = [
   "likes",
@@ -214,7 +217,7 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
             onClick={() => likeMutation.mutate()}
             aria-label={isLiked ? "remove like" : "add like"}
           >
-            <img src={isLiked ? "/like-filled.svg" : "/like.svg"} alt="" />
+            <img src={isLiked ? LikeFilled : LikeIcon} alt="" />
             {vote.likes.length}
           </IconButton>
         )}
@@ -224,7 +227,7 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
             onClick={() => deleteCommentMutation.mutate()}
             aria-label="delete"
           >
-            <img src="/delete.svg" alt="" />
+            <img src={Delete} alt="" />
           </IconButton>
         )}
       </CommentButtonsWrapper>
@@ -438,7 +441,7 @@ function Reply({
             onClick={() => deleteReplyMutation.mutate()}
             aria-label="delete"
           >
-            <img src="/delete.svg" alt="" />
+            <img src={Delete} alt="" />
           </IconButton>
         )}
       </ReplyFirstRow>

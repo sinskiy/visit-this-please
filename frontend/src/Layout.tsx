@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { NavLink, Outlet } from "react-router";
-import { UserContext } from "./user";
+import { UserContext } from "@/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi } from "./lib/fetch";
+import { mutateApi } from "@/lib/fetch";
 import styled from "styled-components";
-import Skeleton from "./ui/Skeleton";
+import Skeleton from "@/ui/Skeleton";
 
 const Header = styled.header`
   display: flex;

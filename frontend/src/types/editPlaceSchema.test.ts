@@ -1,4 +1,3 @@
-import { expect, test } from "vitest";
 import editPlaceSchema from "./editPlaceSchema";
 
 const DEFAULT = {

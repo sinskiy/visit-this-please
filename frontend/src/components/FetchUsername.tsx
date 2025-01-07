@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
-import { UserContext } from "../user";
+import { UserContext } from "@/user";
 import { useQuery } from "@tanstack/react-query";
-import { queryApi } from "../lib/fetch";
+import { queryApi } from "@/lib/fetch";
 import styled from "styled-components";
 
 const Button = styled.button`

@@ -1,14 +1,17 @@
-import { getFormattedPlace, PlaceById, type Place } from "../lib/places";
+import { getFormattedPlace, PlaceById, type Place } from "@/lib/places";
 import { PropsWithChildren, useContext, useRef } from "react";
-import { UserContext } from "../user";
-import { useVote, VoteType } from "../lib/votes";
+import { UserContext } from "@/user";
+import { useVote, VoteType } from "@/lib/votes";
 import Comments from "./comments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryApi } from "../lib/fetch";
-import EditPlace from "./EditPlace";
+import { queryApi } from "@/lib/fetch";
+import EditPlace from "@/components/EditPlace";
 import styled from "styled-components";
-import CheckboxField from "../ui/CheckboxField";
-import IconButton from "../ui/IconButton";
+import CheckboxField from "@/ui/CheckboxField";
+import IconButton from "@/ui/IconButton";
+import Delete from "@/assets/delete.svg";
+import Up from "@/assets/up.svg";
+import UpFilled from "@/assets/up-filled.svg";
 
 const ManagePlace = styled.div`
   display: flex;
@@ -60,7 +63,7 @@ export default function Place({
               aria-label="delete"
               className="icon"
             >
-              <img src="/delete.svg" alt="" />
+              <img src={Delete} alt="" />
             </IconButton>
             <button onClick={() => dialogRef.current?.showModal()}>edit</button>
             <EditPlace
@@ -145,9 +148,9 @@ function Votes({
         id={`vote-${placeId}-up`}
         label={
           voted === "UP" ? (
-            <img src="/up-filled.svg" alt="" />
+            <img src={UpFilled} alt="" />
           ) : (
-            <img src="/up.svg" alt="" />
+            <img src={Up} alt="" />
           )
         }
         isCheckboxHidden
@@ -162,12 +165,12 @@ function Votes({
         label={
           voted === "DOWN" ? (
             <img
-              src="/up-filled.svg"
+              src={UpFilled}
               alt=""
               style={{ transform: "rotate(180deg)" }}
             />
           ) : (
-            <img src="/up.svg" alt="" style={{ transform: "rotate(180deg)" }} />
+            <img src={Up} alt="" style={{ transform: "rotate(180deg)" }} />
           )
         }
         isCheckboxHidden

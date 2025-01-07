@@ -1,4 +1,4 @@
-import { Vote, VoteType } from "./votes";
+import { Vote, VoteType } from "@/lib/votes";
 
 interface PlaceBase {
   _id: string;

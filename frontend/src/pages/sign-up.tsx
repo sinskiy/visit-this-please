@@ -1,13 +1,13 @@
-import { mutateApi } from "../lib/fetch";
+import { mutateApi } from "@/lib/fetch";
 import { infer as inferType, object, string } from "zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect } from "react";
-import { UserContext } from "../user";
+import { UserContext } from "@/user";
 import { useNavigate } from "react-router";
-import InputField from "../ui/InputField";
-import Form from "../ui/Form";
+import InputField from "@/ui/InputField";
+import Form from "@/ui/Form";
 
 export default function SignUp() {
   const { mutation, onSignUp } = useSignUp();

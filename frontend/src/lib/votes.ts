@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi } from "./fetch";
+import { mutateApi } from "@/lib/fetch";
 
 export type VoteType = "UP" | "DOWN";
 
