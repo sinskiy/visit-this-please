@@ -62,7 +62,7 @@ export default {
     process.env.DEVELOPMENT && new ForkTsCheckerPlugin(),
     process.env.DEVELOPMENT && new ReactRefreshWebpackPlugin(),
     new CopyPlugin({ patterns: [{ from: "./public", to: "." }] }),
-    new webpack.EnvironmentPlugin(["DEVELOPMENT", "API_URL"]),
+    new webpack.EnvironmentPlugin(["API_URL"]),
   ].filter(Boolean),
   optimization: {
     moduleIds: "deterministic",
