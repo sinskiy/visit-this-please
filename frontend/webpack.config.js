@@ -4,9 +4,10 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import ForkTsCheckerPlugin from "fork-ts-checker-webpack-plugin";
 import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
-import Dotenv from "dotenv-webpack";
 import path from "node:path";
 import "webpack-dev-server";
+import webpack from "webpack";
+import "dotenv/config";
 
 /**
  * @type {import('webpack').Configuration}
@@ -61,7 +62,7 @@ export default {
     process.env.DEVELOPMENT && new ForkTsCheckerPlugin(),
     process.env.DEVELOPMENT && new ReactRefreshWebpackPlugin(),
     new CopyPlugin({ patterns: [{ from: "./public", to: "." }] }),
-    new Dotenv(),
+    new webpack.EnvironmentPlugin(["DEVELOPMENT", "API_URL"]),
   ].filter(Boolean),
   optimization: {
     moduleIds: "deterministic",
