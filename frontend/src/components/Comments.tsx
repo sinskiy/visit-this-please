@@ -3,15 +3,12 @@ import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useContext, useEffect, useMemo, useState } from "react";
 import Form from "@/ui/Form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mutateApi, queryApi } from "@/lib/fetch";
-import { object, string, InferOutput, pipe, nonEmpty } from "valibot";
-import { UserContext } from "@/user";
-import type { Like, Reply, Vote } from "@/lib/votes";
+import { mutateApi } from "@/lib/fetch";
+import type { Like, Vote } from "@/lib/votes";
 import Sort from "@/components/SortOrFilter";
 import { usePlaceSort } from "@/lib/sort";
-import { useLocation, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import FetchUsername from "@/components/FetchUsername";
-import InputField from "@/ui/InputField";
 import CheckboxField from "@/ui/CheckboxField";
 import styled from "styled-components";
 import Card from "@/ui/Card";
@@ -19,27 +16,9 @@ import IconButton from "@/ui/IconButton";
 import LikeFilled from "@/assets/like-filled.svg";
 import LikeIcon from "@/assets/like.svg";
 import Delete from "@/assets/delete.svg";
-
-const SORT_OPTIONS = [
-  "likes",
-  "last-added",
-  "upvotes-first",
-  "downvotes-first",
-];
-
-const StyledComments = styled.div`
-  margin-top: 48px;
-`;
-
-const CommentList = styled.ul`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const StyledSort = styled(Sort)`
-  margin-top: ${(props) => (props.$isUser ? "32px" : 0)};
-`;
+import { UserContext } from "@/user";
+import commentScheme, { CommentScheme } from "@/lib/comments";
+import Replies from "./Replies";
 
 export default function Comments({
   placeId,
@@ -95,15 +74,18 @@ export default function Comments({
   );
 }
 
-const Textarea = styled.textarea`
-  background-color: var(--surface-container-highest);
-  color: var(--on-surface);
-  border: none;
-  outline: 1px solid var(--outline);
-  border-radius: 4px;
-  &:focus {
-    outline: 2px solid var(--primary);
-  }
+const StyledComments = styled.div`
+  margin-top: 48px;
+`;
+
+const CommentList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const StyledSort = styled(Sort)`
+  margin-top: ${(props) => (props.$isUser ? "32px" : 0)};
 `;
 
 function CommentForm({
@@ -175,24 +157,15 @@ function useComment(id: string, voteId?: string) {
   return { mutation, onSubmit };
 }
 
-const commentScheme = object({ text: pipe(string(), nonEmpty()) });
-type CommentScheme = InferOutput<typeof commentScheme>;
-
-const CommentButtonsWrapper = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-`;
-
-const ReplyList = styled.ul`
-  margin-bottom: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const ShowRepliesCheckbox = styled(CheckboxField)`
-  margin-bottom: 16px;
+const Textarea = styled.textarea`
+  background-color: var(--surface-container-highest);
+  color: var(--on-surface);
+  border: none;
+  outline: 1px solid var(--outline);
+  border-radius: 4px;
+  &:focus {
+    outline: 2px solid var(--primary);
+  }
 `;
 
 function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
@@ -243,22 +216,7 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
         onChange={(e) => setShowReplies(e.currentTarget.checked)}
       />
       {showReplies && (
-        <>
-          {vote.replies.length > 0 ? (
-            <ReplyList role="list">
-              {vote.replies.map((reply) => (
-                <li key={reply._id}>
-                  <Reply placeId={placeId} reply={reply} voteId={vote._id} />
-                </li>
-              ))}
-            </ReplyList>
-          ) : (
-            <p>
-              <i>no replies</i>
-            </p>
-          )}
-          {user && <ReplyForm placeId={placeId} voteId={vote._id} />}
-        </>
+        <Replies replies={vote.replies} placeId={placeId} voteId={vote._id} />
       )}
     </Card>
   );
@@ -300,177 +258,19 @@ function useLike(placeId: string, voteId: string, likes: Like[]) {
   return { likeMutation, isLiked };
 }
 
-function ReplyForm({
-  placeId,
-  voteId,
-  replyId,
-  replyUserId,
-}: {
-  placeId: string;
-  voteId: string;
-  replyId?: string;
-  replyUserId?: string;
-}) {
-  const { mutation, onSubmit } = useReply(
-    placeId,
-    voteId,
-    replyId,
-    replyUserId
-  );
-
-  const {
-    register,
-    handleSubmit,
-    formState: { isSubmitSuccessful },
-    reset,
-  } = useForm<CommentScheme>({
-    resolver: valibotResolver(commentScheme),
-  });
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset();
-    }
-  }, [isSubmitSuccessful, reset]);
-
-  return (
-    <Form
-      onSubmit={handleSubmit(onSubmit)}
-      mutation={mutation}
-      customButton={Button}
-      $row={true}
-    >
-      <InputField
-        type="text"
-        id="reply"
-        {...register("text")}
-        error={undefined}
-      />
-    </Form>
-  );
-}
-
-function useReply(
-  placeId: string,
-  voteId: string,
-  replyId?: string,
-  replyUserId?: string
-) {
-  const queryClient = useQueryClient();
-
-  const onSubmit: SubmitHandler<CommentScheme> = (data) => {
-    mutation.mutate({ ...data, placeId, voteId, replyId, replyUserId });
-  };
-
-  const mutation = useMutation({
-    mutationFn: ({
-      placeId,
-      voteId,
-      text,
-      replyId,
-      replyUserId,
-    }: {
-      placeId: string;
-      voteId: string;
-      text: string;
-      replyId: string | undefined;
-      replyUserId: string | undefined;
-    }) =>
-      mutateApi("POST", `/places/${placeId}/votes/${voteId}/replies`, {
-        text,
-        replyId,
-        replyUserId,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["places", placeId] });
-    },
-  });
-
-  return { mutation, onSubmit };
-}
-
-const Button = styled.button`
-  height: fit-content;
-  align-self: center;
-`;
-
-const ReplyFirstRow = styled.div`
+const CommentButtonsWrapper = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 8px;
+  margin-bottom: 16px;
 `;
 
-function Reply({
-  placeId,
-  voteId,
-  reply,
-}: {
-  placeId: string;
-  voteId: string;
-  reply: Reply;
-}) {
-  const { user } = useContext(UserContext);
-  const isMyReply = user?.id === reply.userId;
+const ShowRepliesCheckbox = styled(CheckboxField)`
+  margin-bottom: 16px;
+`;
 
-  const location = useLocation();
-
-  const deleteReplyMutation = useDeleteReply(placeId, voteId, reply._id);
-
-  return (
-    <Card
-      $layer={location.hash.includes(`reply-${reply._id}`) ? "highest" : "high"}
-    >
-      <ReplyFirstRow>
-        <p id={`reply-${reply._id}`}>
-          <b>{reply.text}</b> by <FetchUsername userId={reply.userId} /> | to{" "}
-          <a
-            href={
-              reply.replyId ? `#reply-${reply.replyId}` : `#comment-${voteId}`
-            }
-          >
-            {reply.replyId ? "reply" : "root"}
-          </a>{" "}
-          {reply.replyUserId && (
-            <>
-              by <FetchUsername userId={reply.replyUserId} />
-            </>
-          )}
-        </p>
-        {isMyReply && (
-          <IconButton
-            disabled={deleteReplyMutation.isPending}
-            onClick={() => deleteReplyMutation.mutate()}
-            aria-label="delete"
-          >
-            <img src={Delete} alt="" />
-          </IconButton>
-        )}
-      </ReplyFirstRow>
-      {user && (
-        <ReplyForm
-          placeId={placeId}
-          voteId={voteId}
-          replyId={reply._id}
-          replyUserId={reply.userId}
-        />
-      )}
-      {deleteReplyMutation.isError && (
-        <p>{deleteReplyMutation.error.message}</p>
-      )}
-    </Card>
-  );
-}
-
-function useDeleteReply(placeId: string, voteId: string, replyId: string) {
-  const queryClient = useQueryClient();
-
-  const deleteCommentMutation = useMutation({
-    mutationFn: () =>
-      queryApi(`/places/${placeId}/votes/${voteId}/replies/${replyId}`, {
-        method: "DELETE",
-        credentials: "include",
-      }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["places", placeId] }),
-  });
-  return deleteCommentMutation;
-}
+const SORT_OPTIONS = [
+  "likes",
+  "last-added",
+  "upvotes-first",
+  "downvotes-first",
+];
