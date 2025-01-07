@@ -1,7 +1,16 @@
 import { mutateApi } from "@/lib/fetch";
-import { infer as inferType, object, string } from "zod";
+import {
+  check,
+  forward,
+  InferOutput,
+  maxLength,
+  nonEmpty,
+  object,
+  pipe,
+  string,
+} from "valibot";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect } from "react";
 import { UserContext } from "@/user";
@@ -16,7 +25,7 @@ export default function SignUp() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpSchema>({ resolver: zodResolver(signUpSchema) });
+  } = useForm<SignUpSchema>({ resolver: valibotResolver(signUpSchema) });
 
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -77,13 +86,19 @@ function useSignUp() {
   return { onSignUp, mutation };
 }
 
-const signUpSchema = object({
-  username: string().min(1).max(100),
-  password: string().min(1).max(100),
-  confirmPassword: string().min(1).max(100),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+const signUpSchema = pipe(
+  object({
+    username: pipe(string(), nonEmpty(), maxLength(100)),
+    password: pipe(string(), nonEmpty(), maxLength(100)),
+    confirmPassword: pipe(string(), nonEmpty(), maxLength(100)),
+  }),
+  forward(
+    check(
+      (data) => data.password === data.confirmPassword,
+      "Passwords do not match"
+    ),
+    ["confirmPassword"]
+  )
+);
 
-type SignUpSchema = inferType<typeof signUpSchema>;
+type SignUpSchema = InferOutput<typeof signUpSchema>;

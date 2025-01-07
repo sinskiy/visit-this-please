@@ -4,5 +4,8 @@ export default {
     "@babel/preset-typescript",
     ["@babel/preset-react", { runtime: "automatic" }],
   ],
-  plugins: [process.env.DEVELOPMENT && "react-refresh/babel"].filter(Boolean),
+  plugins: [
+    process.env.DEVELOPMENT && "react-refresh/babel",
+    "babel-plugin-styled-components",
+  ].filter(Boolean),
 };

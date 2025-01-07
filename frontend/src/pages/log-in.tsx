@@ -1,7 +1,14 @@
 import { mutateApi } from "@/lib/fetch";
-import { infer as inferType, object, string } from "zod";
+import {
+  InferOutput,
+  maxLength,
+  nonEmpty,
+  object,
+  pipe,
+  string,
+} from "valibot";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect } from "react";
 import { UserContext } from "@/user";
@@ -16,7 +23,7 @@ export default function LogIn() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LogInSchema>({ resolver: zodResolver(logInSchema) });
+  } = useForm<LogInSchema>({ resolver: valibotResolver(logInSchema) });
 
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
@@ -69,9 +76,11 @@ function useLogIn() {
   return { onLogIn, mutation };
 }
 
-const logInSchema = object({
-  username: string().min(1).max(100),
-  password: string().min(1).max(100),
-});
+const logInSchema = pipe(
+  object({
+    username: pipe(string(), nonEmpty(), maxLength(100)),
+    password: pipe(string(), nonEmpty(), maxLength(100)),
+  })
+);
 
-type LogInSchema = inferType<typeof logInSchema>;
+type LogInSchema = InferOutput<typeof logInSchema>;
