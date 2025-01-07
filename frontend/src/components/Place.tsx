@@ -64,14 +64,14 @@ export default function Place({
               aria-label="delete"
               className="icon"
             >
-              <img src={Delete} alt="" />
+              <img src={Delete} width={24} height={24} alt="" />
             </IconButton>
             <IconButton
               onClick={() => dialogRef.current?.showModal()}
               aria-label="edit"
               className="icon"
             >
-              <img src={Edit} alt="" />
+              <img src={Edit} width={24} height={24} alt="" />
             </IconButton>
             <EditPlace
               isCountrySelectedDefault={true}
@@ -153,11 +153,12 @@ function Votes({
         disabled={!user || isVoteLoading}
         checked={voted === "UP"}
         id={`vote-${placeId}-up`}
+        aria-label="upvote"
         label={
           voted === "UP" ? (
-            <img src={UpFilled} alt="" />
+            <img src={UpFilled} width={24} height={24} alt="upvote" />
           ) : (
-            <img src={Up} alt="" />
+            <img src={Up} width={24} height={24} alt="upvote" />
           )
         }
         isCheckboxHidden
@@ -169,15 +170,24 @@ function Votes({
         disabled={!user || isVoteLoading}
         checked={voted === "DOWN"}
         id={`vote-${placeId}-down`}
+        aria-label="downvote"
         label={
           voted === "DOWN" ? (
             <img
               src={UpFilled}
-              alt=""
+              width={24}
+              height={24}
+              alt="downvote"
               style={{ transform: "rotate(180deg)" }}
             />
           ) : (
-            <img src={Up} alt="" style={{ transform: "rotate(180deg)" }} />
+            <img
+              src={Up}
+              width={24}
+              height={24}
+              alt=""
+              style={{ transform: "rotate(180deg)" }}
+            />
           )
         }
         isCheckboxHidden
