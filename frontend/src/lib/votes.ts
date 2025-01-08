@@ -29,7 +29,7 @@ export function useVote() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({ type, id }: { type: VoteType; id: string }) => {
+    mutationFn: ({ type, id }: { type: VoteType | null; id: string }) => {
       return mutateApi("PATCH", `/places/${id}/votes`, { type });
     },
     onSettled: () => {
