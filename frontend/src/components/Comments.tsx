@@ -16,6 +16,7 @@ import IconButton from "@/ui/IconButton";
 import LikeFilled from "@/assets/like-filled.svg";
 import LikeIcon from "@/assets/like.svg";
 import Delete from "@/assets/delete.svg";
+import UpFilled from "@/assets/up-filled.svg";
 import { UserContext } from "@/user";
 import commentScheme, { CommentScheme } from "@/lib/comments";
 import Replies from "./Replies";
@@ -177,9 +178,18 @@ function Comment({ placeId, vote }: { placeId: string; vote: Vote }) {
 
   return (
     <Card>
-      <p id={`comment-${vote._id}`}>
-        <b>{vote.text}</b> by <FetchUsername userId={vote.userId} />
-      </p>
+      <CommentHeader>
+        <img
+          src={UpFilled}
+          alt={vote.type === "UP" ? "upvote" : "downvote"}
+          style={{
+            transform: vote.type === "DOWN" ? "rotate(180deg)" : undefined,
+          }}
+        />
+        <p id={`comment-${vote._id}`}>
+          <b>{vote.text}</b> by <FetchUsername userId={vote.userId} />
+        </p>
+      </CommentHeader>
       <CommentButtonsWrapper>
         <IconButton
           disabled={likeMutation.isPending || user === null}
@@ -266,6 +276,11 @@ const CommentButtonsWrapper = styled.div`
 
 const ShowRepliesCheckbox = styled(CheckboxField)`
   margin-bottom: 16px;
+`;
+
+const CommentHeader = styled.header`
+  display: flex;
+  gap: 0.5rem;
 `;
 
 const SORT_OPTIONS = [
