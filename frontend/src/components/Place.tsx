@@ -150,6 +150,7 @@ function Votes({
       <CheckboxField
         type="radio"
         onChange={() => mutate({ type: "UP", id: placeId })}
+        onClick={() => voted === "UP" && mutate({ type: null, id: placeId })}
         disabled={!user || isVoteLoading}
         checked={voted === "UP"}
         id={`vote-${placeId}-up`}
@@ -167,6 +168,7 @@ function Votes({
       <CheckboxField
         type="radio"
         onChange={() => mutate({ type: "DOWN", id: placeId })}
+        onClick={() => voted === "DOWN" && mutate({ type: null, id: placeId })}
         disabled={!user || isVoteLoading}
         checked={voted === "DOWN"}
         id={`vote-${placeId}-down`}

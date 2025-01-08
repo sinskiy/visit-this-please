@@ -221,7 +221,7 @@ router.patch("/:id", isUser, async (req, res) => {
 router.patch("/:id/votes", isUser, async (req, res) => {
   const { id } = req.params;
 
-  if (!req.body.type) {
+  if (!req.body.type && req.body.type !== null) {
     throw new ErrorWithStatus("No type", 400);
   }
 
@@ -232,14 +232,18 @@ router.patch("/:id/votes", isUser, async (req, res) => {
   }
 
   let voted = false;
-  place.votes.map((vote) => {
+  place.votes.forEach((vote) => {
     if (vote.userId.toString() === req.user?.id) {
       voted = true;
-      vote.type = req.body.type;
+      if (req.body.type === null) {
+        vote.deleteOne();
+      } else {
+        vote.type = req.body.type;
+      }
     }
-    return vote;
   });
-  if (!voted) {
+
+  if (!voted && req.body.type !== null) {
     place.votes.push({ type: req.body.type, userId: req.user!.id });
   }
 
