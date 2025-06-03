@@ -1,6 +1,6 @@
 # visit this, please!
 
-Make others see your most and least favorite places, available at [visit-this-please.sinskiy.website](https://visit-this-please.sinskiy.website)
+Make others see your most and least favorite places, available at [visit-this-please.sinskiy.site](https://visit-this-please.sinskiy.site)
 
 > [!WARNING]
 > I use free tier of Render and server spins down after a period of inactivity, so you'll probably have to wait for about 30 seconds before you can use the website
@@ -28,19 +28,19 @@ Vite, Vitest, Zod
 
 ### Backend
 
-Express, MongoDB, mongoose, Passport.js, supertest, Zod
+Typescript, Express, MongoDB, mongoose, Passport.js, supertest, Zod
 
 ## Deployed on
 
-Frontend: [visit-this-please.sinskiy.website](https://visit-this-please.sinskiy.website) - Netlify
+Frontend: [visit-this-please.sinskiy.site](https://visit-this-please.sinskiy.site) - Netlify
 
-Backend: [api.visit-this-please.sinskiy.website](https://api.visit-this-please.sinskiy.website) - Render
+Backend: [api.visit-this-please.sinskiy.site](https://api.visit-this-please.sinskiy.site) - Render
 
 Database: MongoDB Atlas
 
 ##
 
-0. create MongoDB database _(out of scope) of this README_
+0. create MongoDB database _(out of scope of this README)_
 
 1.
 
