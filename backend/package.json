@@ -1,7 +1,7 @@
 {
   "type": "module",
   "scripts": {
-    "pool": "node --experimental-strip-types src/db/pool.ts",
+    "seed": "node --experimental-strip-types src/db/seed.ts",
     "dev": "node --watch --experimental-strip-types src/app.ts",
     "prod": "node --experimental-strip-types src/app.ts",
     "test": "node --experimental-strip-types --watch --test"
