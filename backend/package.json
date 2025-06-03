@@ -2,8 +2,8 @@
   "type": "module",
   "scripts": {
     "seed": "node --experimental-strip-types src/db/seed.ts",
-    "dev": "node --watch --experimental-strip-types src/app.ts",
-    "prod": "node --experimental-strip-types src/app.ts",
+    "dev": "NODE_ENV=development node --watch --experimental-strip-types src/app.ts",
+    "start": "NODE_ENV=production node --experimental-strip-types src/app.ts",
     "test": "node --experimental-strip-types --watch --test"
   },
   "dependencies": {
